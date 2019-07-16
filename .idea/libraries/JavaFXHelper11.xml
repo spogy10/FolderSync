@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="JavaFXHelper11">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/JavaFXHelper11.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/JavaFXHelper11.jar!/javafx.base" />
+      <root url="jar://$PROJECT_DIR$/lib/JavaFXHelper11.jar!/javafx.controls" />
+      <root url="jar://$PROJECT_DIR$/lib/JavaFXHelper11.jar!/javafx.fxml" />
+      <root url="jar://$PROJECT_DIR$/lib/JavaFXHelper11.jar!/javafx.graphics" />
+      <root url="jar://$PROJECT_DIR$/lib/JavaFXHelper11.jar!/javafx.media" />
+      <root url="jar://$PROJECT_DIR$/lib/JavaFXHelper11.jar!/javafx.swing" />
+      <root url="jar://$PROJECT_DIR$/lib/JavaFXHelper11.jar!/javafx.web" />
+    </SOURCES>
+  </library>
+</component>
