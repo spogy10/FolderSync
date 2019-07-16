@@ -7,6 +7,8 @@ import model.Status;
 
 public class Main {
 
+    public static final String  FOLDER_PATH = "E:\\poliv\\Videos\\TEW BII WATCHED";
+
     //todo create user interface
 
     //todo set up serv socket
