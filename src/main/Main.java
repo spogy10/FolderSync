@@ -7,6 +7,13 @@ import model.Status;
 
 public class Main {
 
+    //todo create user interface
+
+    //todo set up serv socket
+
+    //todo set up folder selection
+
+    //todo set up methods to get and pass file data
 
     public static void main(String[] args) {
 
