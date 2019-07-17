@@ -1,6 +1,6 @@
 package manager;
 
-import model.FileContent;
+import models.FileContent;
 
 import java.util.List;
 

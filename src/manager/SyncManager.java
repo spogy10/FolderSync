@@ -1,6 +1,6 @@
 package manager;
 
-import model.Changes;
+import models.Changes;
 import syncenum.SyncEnum;
 
 import java.util.List;

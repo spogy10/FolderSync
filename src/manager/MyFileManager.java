@@ -2,7 +2,7 @@ package manager;
 
 import exceptions.MyFileManagerNotInitializedException;
 import main.Main;
-import model.FileContent;
+import models.FileContent;
 
 import java.io.File;
 import java.io.FileFilter;

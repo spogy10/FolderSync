@@ -1,4 +1,4 @@
-package model;
+package models;
 
 import exceptions.StatusNotIntializedException;
 import main.Main;

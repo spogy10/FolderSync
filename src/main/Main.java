@@ -3,9 +3,11 @@ package main;
 import exceptions.SaveStatusException;
 import exceptions.SetupStatusException;
 import exceptions.StatusNotIntializedException;
-import model.Status;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import models.Status;
 
-public class Main {
+public class Main extends Application {
 
     public static final String  FOLDER_PATH = "E:\\poliv\\Videos\\TEW BII WATCHED";
 
@@ -28,6 +30,8 @@ public class Main {
             System.exit(1);
         }
 
+        launch(args);
+
 
         try {
             if(!Status.saveStatus())
@@ -48,5 +52,10 @@ public class Main {
 
     public static void outputError(String message, Exception e){
         System.out.println(message);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
     }
 }
