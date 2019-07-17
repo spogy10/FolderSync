@@ -1,6 +1,7 @@
 package model;
 
 import exceptions.StatusNotIntializedException;
+import main.Main;
 
 import java.io.*;
 import java.util.HashSet;
@@ -39,8 +40,10 @@ public class Status {
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            Main.outputError(e);
         } catch (IOException e) {
             e.printStackTrace();
+            Main.outputError(e);
         } finally {
             if (oos == null)
                 success = false;
@@ -49,6 +52,7 @@ public class Status {
                     oos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Main.outputError(e);
                     success = false;
                 }
             }
@@ -69,16 +73,20 @@ public class Status {
             success = true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            Main.outputError(e);
         } catch (IOException e) {
             e.printStackTrace();
+            Main.outputError(e);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            Main.outputError(e);
         } finally {
             if (ois != null)
                 try {
                     ois.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Main.outputError(e);
                     success = false;
                 }
 
@@ -105,6 +113,7 @@ public class Status {
         try{
             isStatusInitialized();
         } catch (StatusNotIntializedException e) {
+            Main.outputError(e);
             initializeStatus();
         }
 

@@ -24,6 +24,7 @@ public class Main {
                 throw new SetupStatusException();
         } catch (SetupStatusException e) {
             e.printStackTrace();
+            outputError(e);
             System.exit(1);
         }
 
@@ -33,8 +34,19 @@ public class Main {
                 throw new SaveStatusException();
         } catch (StatusNotIntializedException e) {
             e.printStackTrace();
+            outputError(e);
         } catch (SaveStatusException e) {
             e.printStackTrace();
+            outputError(e);
         }
+    }
+
+
+    public static void outputError(Exception e){
+        outputError("", e);
+    }
+
+    public static void outputError(String message, Exception e){
+        System.out.println(message);
     }
 }
