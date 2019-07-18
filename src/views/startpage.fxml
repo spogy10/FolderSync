@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="905.0" prefWidth="660.0" style="-fx-background-color: #708d8f;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <StackPane prefHeight="319.0" prefWidth="317.0">
+         <children>
+            <ImageView fitHeight="319.0" fitWidth="317.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../assets/sync_green.png" />
+               </image>
+               <effect>
+                  <DropShadow spread="0.11" />
+               </effect>
+            </ImageView>
+            <Button mnemonicParsing="false" opacity="0.0" prefHeight="298.0" prefWidth="223.0" />
+         </children>
+      </StackPane>
+      <Separator opacity="0.0" prefHeight="118.0" prefWidth="660.0" />
+      <StackPane minHeight="319.0" minWidth="317.0" prefHeight="319.0" prefWidth="317.0">
+         <children>
+            <ImageView fitHeight="319.0" fitWidth="317.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../assets/settings_grey.png" />
+               </image>
+               <effect>
+                  <SepiaTone level="0.15">
+                     <input>
+                        <DropShadow spread="0.11" />
+                     </input>
+                  </SepiaTone>
+               </effect>
+            </ImageView>
+            <Button mnemonicParsing="false" opacity="0.0" prefHeight="272.0" prefWidth="271.0" />
+         </children>
+      </StackPane>
+   </children>
+</VBox>
