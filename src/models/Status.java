@@ -10,7 +10,7 @@ import java.util.List;
 public class Status {
     private static HashSet<String> status;
     private static final String FOLDER_NAME = "Status Folder";
-    private static final String FILE_NAME = "status.sync";
+    private static final String FILE_NAME = "status.btnSyncOnClick";
 
 
 

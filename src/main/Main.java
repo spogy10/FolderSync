@@ -1,11 +1,20 @@
 package main;
 
+import JavaFXHelper.FXHelper;
+import controllers.HomeController;
 import exceptions.SaveStatusException;
 import exceptions.SetupStatusException;
 import exceptions.StatusNotIntializedException;
 import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import models.Status;
+
+import java.io.IOException;
 
 public class Main extends Application {
 
@@ -45,6 +54,32 @@ public class Main extends Application {
         }
     }
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource(HomeController.FXML));
+
+        Scene scene = new Scene(root);
+
+        primaryStage.setScene(scene);
+
+        primaryStage.setTitle(HomeController.TITLE);
+
+        primaryStage.show();
+
+        primaryStage.setOnCloseRequest(new EventHandler<>() {
+            @Override
+            public void handle(WindowEvent event) {
+                event.consume();
+                try {
+                    if(FXHelper.closeProgram(this, primaryStage))
+                        System.exit(0);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
 
     public static void outputError(Exception e){
         outputError("", e);
@@ -54,8 +89,4 @@ public class Main extends Application {
         System.out.println(message);
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-
-    }
 }
