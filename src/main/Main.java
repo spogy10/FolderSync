@@ -13,12 +13,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import models.Status;
+import utility.Settings;
 
 import java.io.IOException;
 
 public class Main extends Application {
-
-    public static final String  FOLDER_PATH = "E:\\poliv\\Videos\\TEW BII WATCHED";
 
     //todo create user interface
 
@@ -29,6 +28,8 @@ public class Main extends Application {
     //todo set up methods to get and pass file data
 
     public static void main(String[] args) {
+
+        Settings.getInstance();
 
         try {
             if(!Status.setUpStatus())
