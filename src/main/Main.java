@@ -29,7 +29,7 @@ public class Main extends Application {
 
     public static void main(String[] args) {
 
-        Settings.getInstance();
+        Settings.getInstance().saveSettings();
 
         try {
             if(!Status.setUpStatus())
