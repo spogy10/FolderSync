@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,9 +16,12 @@ public class MyFileManager implements FileManager, FileFilter {
 
     private static File folder;
 
+    private static final String[] FILE_EXTENSIONS = new String[]{"mp4", "mkv", "flv"};
+
+    private final List FILE_EXTENSIONS_LIST;
+
     private static MyFileManager instance;
 
-    private final FileFilter fileFilter = this;
     public static MyFileManager getInstance(String folderPath){
         instance = new MyFileManager(folderPath);
 
@@ -33,6 +37,7 @@ public class MyFileManager implements FileManager, FileFilter {
 
     private MyFileManager(String folderPath){
         folder = new File(folderPath);
+        FILE_EXTENSIONS_LIST = new LinkedList(Arrays.asList(FILE_EXTENSIONS));
     }
 
 
@@ -80,7 +85,21 @@ public class MyFileManager implements FileManager, FileFilter {
 
     @Override
     public boolean accept(File pathname) {
-        return true;
+        boolean isFile, isRightFileType;
+
+        String fileExtension = getFileExtension(pathname.getName());
+
+        isFile = pathname.isFile();
+
+        isRightFileType = FILE_EXTENSIONS_LIST.contains(fileExtension);
+
+        return isFile && isRightFileType;
+    }
+
+    private String getFileExtension(String fileName){
+        int lastIndex = fileName.lastIndexOf('.');
+
+        return (lastIndex > 0) ? fileName.substring(++lastIndex) : "";
     }
 
     private boolean createFile(FileContent fileContent){

@@ -5,6 +5,7 @@ import main.Main;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Status {
@@ -112,7 +113,13 @@ public class Status {
         status = new HashSet<>();
     }
 
-    private static void addToStatus(List<String> fileNames){
+    public static List<String> getStatusList() throws StatusNotIntializedException {
+        isStatusInitialized();
+
+        return new LinkedList<>(status);
+    }
+
+    public static void addToStatus(List<String> fileNames){
         String errorMessage = "Status not initialized in addToStatus method";
 
         try{
@@ -125,7 +132,7 @@ public class Status {
         status.addAll(fileNames);
     }
 
-    private static void removeFromStatus(List<String> fileNames) throws StatusNotIntializedException {
+    public static void removeFromStatus(List<String> fileNames) throws StatusNotIntializedException {
         isStatusInitialized();
 
         status.removeAll(fileNames);
