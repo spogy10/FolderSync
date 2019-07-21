@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MyFileManager implements FileManager, FileFilter {
+public class MyFileManager implements ItemManager, FileFilter {
 
     private static File folder;
 
@@ -43,7 +43,7 @@ public class MyFileManager implements FileManager, FileFilter {
 
 
     @Override
-    public boolean addFiles(List<FileContent> files) {
+    public boolean addItems(List<FileContent> files) {
         boolean success = true;
         for(FileContent file : files){
             if(!createFile(file))
@@ -54,7 +54,7 @@ public class MyFileManager implements FileManager, FileFilter {
     }
 
     @Override
-    public boolean removeFiles(List<String> fileNames) {
+    public boolean removeItems(List<String> fileNames) {
         boolean success = true;
         for(String fileName : fileNames){
             try{
@@ -73,7 +73,7 @@ public class MyFileManager implements FileManager, FileFilter {
     }
 
     @Override
-    public List<String> getFileList() {
+    public List<String> getItemsList() {
         LinkedList<String> list = new LinkedList<>();
 
         for(File file : folder.listFiles(this)){

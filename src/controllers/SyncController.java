@@ -3,17 +3,17 @@ package controllers;
 import JavaFXHelper.FXHelper;
 import exceptions.MyFileManagerNotInitializedException;
 import exceptions.StatusNotIntializedException;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import main.Main;
-import manager.FileManager;
+import manager.ItemManager;
 import manager.MyFileManager;
+import manager.RemoteItemManager;
 import models.Status;
+import services.RefreshListService;
 import utility.Resources;
 
 import java.io.IOException;
@@ -24,7 +24,9 @@ public class SyncController implements Initializable {
     public static final String TITLE = "Sync";
     public static final String FXML = "/views/sync.fxml";
 
-    private FileManager fileManager = MyFileManager.getInstance();
+    private ItemManager fileManager = MyFileManager.getInstance();
+    private ItemManager statusManager = new Status();
+    private ItemManager remoteManager = new RemoteItemManager();
 
     @FXML
     private Button btnBack, btnClearAList, btnClearStatusList, btnClearBList, btnRefreshList, btnSync;
@@ -48,24 +50,28 @@ public class SyncController implements Initializable {
     }
 
     @FXML
-    public void btnRefreshListOnClick() { //todo put these in threads
+    public void btnRefreshListOnClick() { //todo show loading circles
         refreshAList();
         refreshStatusList();
+        refreshBList();
     }
 
     private void refreshStatusList() {
-        try{
-            lvStatus.getItems().clear();
-            lvStatus.getItems().addAll(Status.getStatusList());
-        } catch (StatusNotIntializedException e) {
-            e.printStackTrace();
-            Main.outputError("Could not get status list", e);
-        }
+        lvStatus.getItems().clear();
+        RefreshListService rlService = new RefreshListService(statusManager, lvStatus.getItems());
+        rlService.restart();
     }
 
     private void refreshAList() {
         lvA.getItems().clear();
-        lvA.getItems().addAll(fileManager.getFileList());
+        RefreshListService rlService = new RefreshListService(fileManager, lvA.getItems());
+        rlService.restart();
+    }
+
+    private void refreshBList(){
+        lvB.getItems().clear();
+        RefreshListService rlService = new RefreshListService(remoteManager, lvB.getItems());
+        rlService.restart();
     }
 
     @FXML

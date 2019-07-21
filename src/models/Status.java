@@ -2,13 +2,14 @@ package models;
 
 import exceptions.StatusNotIntializedException;
 import main.Main;
+import manager.ItemManager;
 
 import java.io.*;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Status {
+public class Status implements ItemManager {
     private static HashSet<String> status;
     private static final String FOLDER_NAME = "Status Folder";
     private static final String FILE_NAME = "status.sync";
@@ -136,5 +137,48 @@ public class Status {
         isStatusInitialized();
 
         status.removeAll(fileNames);
+    }
+
+    @Override
+    public boolean addItems(List<FileContent> files) {
+        String errorMessage = "Status not initialized in addToStatus method";
+
+        try{
+            isStatusInitialized();
+        } catch (StatusNotIntializedException e) {
+            Main.outputError(errorMessage, e);
+            initializeStatus();
+            return false;
+        }
+        for(FileContent fileName : files){
+            status.add(fileName.getFileName());
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean removeItems(List<String> fileNames) {
+        try {
+            removeFromStatus(fileNames);
+        } catch (StatusNotIntializedException e) {
+            e.printStackTrace();
+            Main.outputError("Error in removeItems for Status", e);
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public List<String> getItemsList() {
+        try{
+            return getStatusList();
+        } catch (StatusNotIntializedException e) {
+            e.printStackTrace();
+            Main.outputError("Error in getItemList for Status", e);
+        }
+
+        return new LinkedList<String>();
     }
 }
