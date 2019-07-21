@@ -10,7 +10,7 @@ import java.util.List;
 public class Status {
     private static HashSet<String> status;
     private static final String FOLDER_NAME = "Status Folder";
-    private static final String FILE_NAME = "status.btnSyncOnClick";
+    private static final String FILE_NAME = "status.sync";
 
 
 
@@ -22,6 +22,7 @@ public class Status {
 
     public static boolean saveStatus() throws StatusNotIntializedException {
         isStatusInitialized();
+        String errorMessage = "Status file not saved created";
 
         boolean success = false;
         ObjectOutputStream oos = null;
@@ -40,10 +41,10 @@ public class Status {
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Main.outputError(e);
+            Main.outputError(errorMessage, e);
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError(e);
+            Main.outputError(errorMessage, e);
         } finally {
             if (oos == null)
                 success = false;
@@ -52,7 +53,7 @@ public class Status {
                     oos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Main.outputError(e);
+                    Main.outputError(errorMessage, e);
                     success = false;
                 }
             }
@@ -64,6 +65,8 @@ public class Status {
         boolean success = false;
         ObjectInputStream ois = null;
 
+        String errorMessage = "Status could not be retrieved from file";
+
         try {
             File statusFile = new File(FOLDER_NAME, FILE_NAME);
             ois = new ObjectInputStream(new FileInputStream(statusFile));
@@ -73,20 +76,20 @@ public class Status {
             success = true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Main.outputError(e);
+            Main.outputError(errorMessage, e);
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError(e);
+            Main.outputError(errorMessage, e);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            Main.outputError(e);
+            Main.outputError(errorMessage, e);
         } finally {
             if (ois != null)
                 try {
                     ois.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Main.outputError(e);
+                    Main.outputError(errorMessage, e);
                     success = false;
                 }
 
@@ -110,10 +113,12 @@ public class Status {
     }
 
     private static void addToStatus(List<String> fileNames){
+        String errorMessage = "Status not initialized in addToStatus method";
+
         try{
             isStatusInitialized();
         } catch (StatusNotIntializedException e) {
-            Main.outputError(e);
+            Main.outputError(errorMessage, e);
             initializeStatus();
         }
 

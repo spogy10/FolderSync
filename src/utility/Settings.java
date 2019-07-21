@@ -37,11 +37,11 @@ public class Settings implements SettingInterface {
 
     }
 
-    public static String getValue(String key){
+    public String getValue(String key){
         return settingsMap.get(key);
     }
 
-    public static String getValue(SettingsKeys key){
+    public String getValue(SettingsKeys key){
         return getValue(String.valueOf(key));
     }
 

@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import manager.MyFileManager;
 import models.Status;
 import utility.Settings;
 
@@ -27,32 +28,40 @@ public class Main extends Application {
 
     //todo set up methods to get and pass file data
 
-    public static void main(String[] args) {
-
-        Settings.getInstance().saveSettings();
+    private static void onStartUp(){
+        Settings settings = Settings.getInstance();
+        MyFileManager.getInstance(settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION));
 
         try {
             if(!Status.setUpStatus())
                 throw new SetupStatusException();
         } catch (SetupStatusException e) {
             e.printStackTrace();
-            outputError(e);
+            outputError("Could not setup status", e);
             System.exit(1);
         }
+    }
 
-        launch(args);
-
-
+    private static void onApplicationClose(){
+        String saveStatusErrorMessage = "Could not save status on Application close";
         try {
             if(!Status.saveStatus())
                 throw new SaveStatusException();
         } catch (StatusNotIntializedException e) {
             e.printStackTrace();
-            outputError(e);
+            outputError(saveStatusErrorMessage, e);
         } catch (SaveStatusException e) {
             e.printStackTrace();
-            outputError(e);
+            outputError(saveStatusErrorMessage, e);
         }
+    }
+
+    public static void main(String[] args) {
+        onStartUp();
+
+        launch(args);
+
+        onApplicationClose();
     }
 
     @Override
