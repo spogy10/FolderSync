@@ -18,22 +18,21 @@ public class Settings implements SettingInterface {
 
     private static Map<String, String> settingsMap = null;
 
-    private static String escapeCharacter = "\\";
-    private static String characterToEscape = "\"";
+    private static final String escapeCharacter = "\\";
+    private static final String characterToEscape = "\"";
 
-    private static String FOLDER_LOCATION = "E:\\poliv\\Videos\\TEW BII WATCHED";
+    private static final String DEFAULT_FOLDER_LOCATION = "E:\\poliv\\Videos\\TEW BII WATCHED";
 
     public static Settings getInstance(){
         if(instance == null)
             instance = new Settings();
 
         return instance;
-    };
+    }
 
     private Settings(){
         if(!loadSettings()){
-            settingsMap = new HashMap<>();
-            settingsMap.put("FOLDER_LOCATION", FOLDER_LOCATION);
+            resetSettings();
         }
 
     }
@@ -42,8 +41,12 @@ public class Settings implements SettingInterface {
         return settingsMap.get(key);
     }
 
+    public static String getValue(SettingsKeys key){
+        return getValue(String.valueOf(key));
+    }
+
     private String mapToString(){
-        StringBuilder s = new StringBuilder("");
+        StringBuilder s = new StringBuilder();
 
         for(String setting : settingsMap.keySet()){
             String value = escapeString(settingsMap.get(setting));
@@ -56,8 +59,13 @@ public class Settings implements SettingInterface {
     }
 
     private Map<String, String> stringToMap(String string){
+
+        return inputToMap(new Scanner(string));
+    }
+
+    private Map<String, String> inputToMap(Scanner slevel0){
         HashMap<String, String> map = new HashMap<>();
-        Scanner slevel0 = new Scanner(string);
+
         slevel0.useDelimiter("\n");
         while(slevel0.hasNext()){
             Scanner sLevel1 = new Scanner(slevel0.next());
@@ -71,22 +79,11 @@ public class Settings implements SettingInterface {
     }
 
     private Map<String, String> fileToMap(File file) throws FileNotFoundException {
-        HashMap<String, String> map = new HashMap<>();
-        Scanner slevel0 = new Scanner(file);
-        slevel0.useDelimiter("\n");
-        while(slevel0.hasNext()){
-            Scanner sLevel1 = new Scanner(slevel0.next());
-            sLevel1.useDelimiter("\" : \"");
-            String key = getKeyFromLevel1Parser(sLevel1.next());
-            String value = getValueFromLevel1Parser(sLevel1.next());
-            map.put(key, value);
-
-        }
-        return map;
+        return inputToMap(new Scanner(file));
     }
 
     private String getKeyFromLevel1Parser(String s){
-        s = s.substring(1, s.length());
+        s = s.substring(1);
 
         return unEscapeString(s);
     }
@@ -144,8 +141,9 @@ public class Settings implements SettingInterface {
     }
 
     @Override
-    public boolean resetSettings() {
-        return false;
+    public void resetSettings() {
+        settingsMap = new HashMap<>();
+        settingsMap.put(String.valueOf(SettingsKeys.FOLDER_LOCATION), DEFAULT_FOLDER_LOCATION);
     }
 
     public static String escapeString(String string){
@@ -167,5 +165,10 @@ public class Settings implements SettingInterface {
 
         string = string.replace(characterToEscape+escapeCharacter, characterToEscape);
         return string.replace(escapeCharacter+escapeCharacter, escapeCharacter);
+    }
+
+
+    public enum SettingsKeys{
+        FOLDER_LOCATION
     }
 }

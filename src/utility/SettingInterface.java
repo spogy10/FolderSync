@@ -6,5 +6,5 @@ public interface SettingInterface {
 
     boolean loadSettings();
 
-    boolean resetSettings();
+    void resetSettings();
 }
