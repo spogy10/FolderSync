@@ -38,7 +38,6 @@ public class RefreshListService extends Service<List<String>> {
         return new Task<List<String>>() {
             @Override
             protected List<String> call() {
-
                 return itemManager.getItemsList();
             }
         };
