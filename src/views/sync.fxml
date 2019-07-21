@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="968.0" style="-fx-background-color: #708d8f;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.SyncController">
+   <children>
+      <StackPane alignment="TOP_LEFT" prefHeight="44.0" prefWidth="67.0">
+         <children>
+            <ImageView fx:id="ivBack" fitHeight="41.0" fitWidth="72.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="TOP_LEFT">
+               <image>
+                  <Image url="@../../../../assets/arrow_back_grey.png" />
+               </image>
+               <effect>
+                  <DropShadow color="WHITE" spread="0.11" />
+               </effect>
+               <StackPane.margin>
+                  <Insets />
+               </StackPane.margin>
+            </ImageView>
+            <Button fx:id="btnBack" mnemonicParsing="false" onAction="#btnBackOnClick" opacity="0.0" prefHeight="42.0" prefWidth="39.0" StackPane.alignment="TOP_LEFT" />
+         </children>
+      </StackPane>
+      <HBox alignment="CENTER" layoutX="-8.0" layoutY="44.0" prefHeight="299.0" prefWidth="968.0" AnchorPane.bottomAnchor="224.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="44.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="299.0" prefWidth="226.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="btnClearAList" mnemonicParsing="false" onAction="#btnClearAListOnClick" opacity="0.0" prefHeight="34.0" prefWidth="82.0" text="Clear List" VBox.vgrow="ALWAYS" />
+                  <Separator opacity="0.0" prefHeight="13.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="lvA" prefHeight="255.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+            <Separator opacity="0.0" orientation="VERTICAL" prefHeight="299.0" prefWidth="82.0" HBox.hgrow="ALWAYS" />
+            <VBox alignment="CENTER" prefHeight="299.0" prefWidth="226.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="btnClearStatusList" mnemonicParsing="false" onAction="#btnClearStatusListOnClick" prefHeight="34.0" prefWidth="82.0" text="Clear List" VBox.vgrow="ALWAYS" />
+                  <Separator opacity="0.0" prefHeight="13.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="lvStatus" prefHeight="255.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+            <Separator opacity="0.0" orientation="VERTICAL" prefHeight="299.0" prefWidth="82.0" HBox.hgrow="ALWAYS" />
+            <VBox alignment="CENTER" prefHeight="299.0" prefWidth="226.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="btnClearBList" mnemonicParsing="false" onAction="#btnClearBListOnClick" opacity="0.0" prefHeight="34.0" prefWidth="82.0" text="Clear List" VBox.vgrow="ALWAYS" />
+                  <Separator opacity="0.0" prefHeight="13.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="lvB" prefHeight="255.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+         </children></HBox>
+      <VBox alignment="CENTER" layoutY="367.0" prefHeight="224.0" prefWidth="968.0" style="-fx-background-color: #708d8f;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Separator opacity="0.0" prefHeight="30.0" prefWidth="968.0" VBox.vgrow="ALWAYS" />
+            <Button fx:id="btnRefreshList" mnemonicParsing="false" onAction="#btnRefreshListOnClick" prefHeight="42.0" prefWidth="677.0" text="Refresh Lists" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin></Button>
+            <Separator opacity="0.0" prefHeight="19.0" prefWidth="968.0" />
+            <StackPane prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="ivSync" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../../assets/sync_green.png" />
+                     </image>
+                     <effect>
+                        <DropShadow spread="0.11" />
+                     </effect>
+                  </ImageView>
+                  <Button fx:id="btnSync" mnemonicParsing="false" onAction="#btnSyncOnClick" opacity="0.0" prefHeight="144.0" prefWidth="107.0" />
+               </children>
+            </StackPane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

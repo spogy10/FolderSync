@@ -1,5 +1,6 @@
 package controllers;
 
+import JavaFXHelper.FXHelper;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -7,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import utility.Resources;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -29,8 +31,8 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    public void btnSyncOnClick() {
-        System.out.println("sync button clicked");
+    public void btnSyncOnClick() throws IOException {
+        FXHelper.sceneChanger(this, btnSync, SyncController.FXML, SyncController.TITLE);
     }
 
     @FXML

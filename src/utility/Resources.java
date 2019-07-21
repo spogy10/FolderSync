@@ -10,8 +10,7 @@ public class Resources {
     public static final String ASSETS_FOLDER = System.getProperty("user.dir")+"\\assets\\";
     public static final String SYNC_ICON = "sync_green.png";
     public static final String OPTIONS_ICON = "settings_grey.png";
-
-
+    public static final String BACK_ARROW_ICON = "arrow_back_grey.png";
 
 
     public static Image getImage(String fileName){
