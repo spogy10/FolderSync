@@ -7,6 +7,7 @@ public enum DC {
     ADD_ITEMS,
     REMOVE_ITEMS,
     GET_ITEMS,
-    SYNC_LISTS
+    SYNC_LISTS,
+    DISCONNECT
 
 }
