@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
@@ -34,7 +35,7 @@
          <children>
             <VBox alignment="CENTER" prefHeight="299.0" prefWidth="226.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnClearAList" mnemonicParsing="false" onAction="#btnClearAListOnClick" opacity="0.0" prefHeight="34.0" prefWidth="82.0" text="Clear List" VBox.vgrow="ALWAYS" />
+                  <ProgressIndicator fx:id="piA" opacity="0.0" style="-fx-accent: white;" VBox.vgrow="ALWAYS" />
                   <Separator opacity="0.0" prefHeight="13.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
                   <ListView fx:id="lvA" prefHeight="255.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
                </children>
@@ -50,7 +51,7 @@
             <Separator opacity="0.0" orientation="VERTICAL" prefHeight="299.0" prefWidth="82.0" HBox.hgrow="ALWAYS" />
             <VBox alignment="CENTER" prefHeight="299.0" prefWidth="226.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnClearBList" mnemonicParsing="false" onAction="#btnClearBListOnClick" opacity="0.0" prefHeight="34.0" prefWidth="82.0" text="Clear List" VBox.vgrow="ALWAYS" />
+                  <ProgressIndicator fx:id="piB" opacity="0.0" style="-fx-accent: white;" />
                   <Separator opacity="0.0" prefHeight="13.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
                   <ListView fx:id="lvB" prefHeight="255.0" prefWidth="268.0" VBox.vgrow="ALWAYS" />
                </children>

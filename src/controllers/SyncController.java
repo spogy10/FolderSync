@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
 import main.Main;
 import manager.ItemManager;
@@ -29,12 +30,15 @@ public class SyncController implements Initializable {
     private ItemManager remoteManager = new RemoteItemManager();
 
     @FXML
-    private Button btnBack, btnClearAList, btnClearStatusList, btnClearBList, btnRefreshList, btnSync;
+    private Button btnBack, btnClearStatusList, btnRefreshList, btnSync;
     @FXML
     private ListView<String> lvA, lvB, lvStatus;
 
     @FXML
     private ImageView ivSync, ivBack;
+
+    @FXML
+    private ProgressIndicator piA, piB;
 
     public SyncController() throws MyFileManagerNotInitializedException {
     }
@@ -64,13 +68,15 @@ public class SyncController implements Initializable {
 
     private void refreshAList() {
         lvA.getItems().clear();
-        RefreshListService rlService = new RefreshListService(fileManager, lvA.getItems());
+        RefreshListService rlService = new RefreshListService(fileManager, lvA.getItems(), piA);
+        piA.setOpacity(1);
         rlService.restart();
     }
 
     private void refreshBList(){
         lvB.getItems().clear();
-        RefreshListService rlService = new RefreshListService(remoteManager, lvB.getItems());
+        RefreshListService rlService = new RefreshListService(remoteManager, lvB.getItems(), piB);
+        piB.setOpacity(1);
         rlService.restart();
     }
 
@@ -81,13 +87,5 @@ public class SyncController implements Initializable {
     @FXML
     public void btnBackOnClick() throws IOException {
         FXHelper.sceneChanger(this, btnBack, HomeController.FXML, HomeController.TITLE);
-    }
-
-    @FXML
-    public void btnClearAListOnClick() {
-    }
-
-    @FXML
-    public void btnClearBListOnClick() {
     }
 }
