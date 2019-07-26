@@ -2,6 +2,8 @@ package main;
 
 import JavaFXHelper.FXHelper;
 import controllers.HomeController;
+import controllers.SyncController;
+import controllers.SyncControllerInterface;
 import exceptions.SaveStatusException;
 import exceptions.SetupStatusException;
 import exceptions.StatusNotIntializedException;
@@ -12,13 +14,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import manager.ItemManager;
 import manager.MyFileManager;
+import manager.MySyncManager;
+import manager.RemoteItemManager;
 import models.Status;
+import services.SyncService;
 import utility.Settings;
 
 import java.io.IOException;
 
 public class Main extends Application {
+
+    private static ItemManager bItemManager;
+    private static SyncControllerInterface syncControllerInterface;
 
     //todo create user interface
 
@@ -90,12 +99,50 @@ public class Main extends Application {
         });
     }
 
+    public static void sync(){ //todo: include sync loading ui
+        SyncService syncService = new SyncService();
+        syncService.restart();
+    }
+
+    public static void setBItemManager(ItemManager manager){
+        bItemManager = manager;
+        outputVerbose("bItemManager Set");
+    }
+
+    public static ItemManager getBItemManager(){
+        outputVerbose("Get bItemManager");
+        if(bItemManager == null){
+            bItemManager = new RemoteItemManager();
+            outputVerbose("bItemManager set to remote manager");
+        }
+
+
+        return bItemManager;
+    }
+
+    public static void setSyncControllerInterface(SyncControllerInterface syncControllerInterface){
+        Main.syncControllerInterface = syncControllerInterface;
+        if(syncControllerInterface == null)
+            outputVerbose("SyncControllerInterface Set to null");
+        else
+            outputVerbose("SyncControllerInterface Set");
+    }
+
+    public static SyncControllerInterface getSyncControllerInterface(){
+        outputVerbose("Get SyncControllerInterface");
+        return syncControllerInterface;
+    }
+
 
     public static void outputError(Exception e){
         outputError("", e);
     }
 
     public static void outputError(String message, Exception e){
+        System.out.println(message);
+    }
+
+    public static void outputVerbose(String message){
         System.out.println(message);
     }
 

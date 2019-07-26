@@ -21,13 +21,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class SyncController implements Initializable {
+public class SyncController implements Initializable, SyncControllerInterface {
     public static final String TITLE = "Sync";
     public static final String FXML = "/views/sync.fxml";
 
     private ItemManager fileManager = MyFileManager.getInstance();
     private ItemManager statusManager = new Status();
-    private ItemManager remoteManager = new RemoteItemManager();
+    private ItemManager remoteManager = Main.getBItemManager();
 
     @FXML
     private Button btnBack, btnClearStatusList, btnRefreshList, btnSync;
@@ -47,6 +47,7 @@ public class SyncController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         ivSync.setImage(Resources.getImage(Resources.SYNC_ICON));
         ivBack.setImage(Resources.getImage(Resources.BACK_ARROW_ICON));
+        Main.setSyncControllerInterface(this);
     }
 
     @FXML
@@ -55,6 +56,10 @@ public class SyncController implements Initializable {
 
     @FXML
     public void btnRefreshListOnClick() { //todo show loading circles
+        refreshLists();
+    }
+
+    public void refreshLists(){
         refreshAList();
         refreshStatusList();
         refreshBList();
@@ -86,6 +91,7 @@ public class SyncController implements Initializable {
 
     @FXML
     public void btnBackOnClick() throws IOException {
+        Main.setSyncControllerInterface(null);
         FXHelper.sceneChanger(this, btnBack, HomeController.FXML, HomeController.TITLE);
     }
 }

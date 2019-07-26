@@ -8,6 +8,7 @@ public enum DC {
     REMOVE_ITEMS,
     GET_ITEMS,
     SYNC_LISTS,
+    SERVER_CONNECTION_ERROR,
     DISCONNECT
 
 }

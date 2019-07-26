@@ -9,6 +9,17 @@ public class Changes { //false delete, true add
     private Map<String, Boolean> stat = new LinkedHashMap<>();
 
 
+    public Map<String, Boolean> getPc() {
+        return pc;
+    }
+
+    public Map<String, Boolean> getMobile() {
+        return mobile;
+    }
+
+    public Map<String, Boolean> getStat() {
+        return stat;
+    }
 
     public void addToStatus(String fileName){
         stat.put(fileName, true);
