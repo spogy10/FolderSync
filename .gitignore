@@ -1,0 +1,7 @@
+#Custom ignored folders
+out/
+
+
+
+#Custom ignored files
+Settings.txt
