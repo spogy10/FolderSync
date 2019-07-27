@@ -13,26 +13,35 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Server {
-   private ServerSocket serverSocket = null;
+    private ServerSocket serverSocket = null;
     private Socket connection = null;
     private ObjectOutputStream os = null;
-   private ObjectInputStream is = null;
-   
-    private AtomicBoolean unreadResponse = new AtomicBoolean(false);
-    private DataCarrier tempResponseHolder;
+    private ObjectInputStream is = null;
+
+    private Runnable runnable;
 
 
     private static Server ourInstance;
     private boolean serverOff = true;
 
-    static Server getInstance(){
-       if(ourInstance == null)
-           ourInstance = new Server();
+    static Server getInstance(Runnable runnable){
+       if(ourInstance != null)
+           ourInstance.endServer();
+
+       ourInstance = new Server(runnable);
 
        return ourInstance;
     }
 
-    private Server() {
+    static Server getInstance(){
+        if(ourInstance == null || ourInstance.runnable == null)
+            return null;
+
+        return ourInstance;
+    }
+
+    private Server(Runnable runnable) {
+        this.runnable = runnable;
         setUpConnection();
     }
     
@@ -50,13 +59,26 @@ public class Server {
         }
     }
 
+
+
+
     private void waitForRequests() {
         Main.outputVerbose("Waiting for requests");
 
         try{
             serverOff = false;
             connection = serverSocket.accept();
-            Main.outputVerbose("connection received");
+            if(initStreams()){
+                Main.outputVerbose("connection received");
+                if(runnable != null){
+                    Thread t = new Thread(runnable);
+                    t.start();
+                    return;
+                }
+                Main.outputVerbose("Could not start ServerHandler Thread");
+            }
+
+            endServer();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -65,8 +87,9 @@ public class Server {
     }
 
     void restartServer(){
-       endServer();
-       setUpConnection();
+        Main.outputVerbose("Restarting Server");
+        endServer();
+        setUpConnection();
     }
 
 
@@ -86,30 +109,37 @@ public class Server {
         return false;
     }
 
-    private DataCarrier sendRequest(DataCarrier request, boolean responseRequired){
-        DataCarrier response = new DataCarrier(DC.SERVER_CONNECTION_ERROR, false);
-        try{
-            os.writeObject(request);
-            Main.outputVerbose("Request: "+request.getInfo()+" sent");
-            if(responseRequired) {
-                response = waitForResponse();
-                Main.outputVerbose("Response for "+request.getInfo()+" received");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        return response;
+    private void notifyRequestSent(String request) {
+        Main.outputVerbose("Request: "+request+" sent");
     }
 
-    private DataCarrier waitForResponse() {
-        while(!unreadResponse.get()){
-            /*wait until response comes in*/
-            Thread.onSpinWait();
-        }
+    private void notifyResponseSent(String response){
+        Main.outputVerbose("Response: "+response+" sent");
+    }
 
-        unreadResponse.compareAndSet(true, false);
-        return tempResponseHolder;
+    private void notifyRequestReceived(String request) {
+        Main.outputVerbose("Request for "+request+" received");
+    }
+
+    private void notifyResponseReceived(String response){
+        Main.outputVerbose("Response for "+response+" received");
+    }
+
+    void sendObject(DataCarrier dc) throws IOException {
+        os.writeObject(dc);
+        if(dc.isRequest())
+            notifyRequestSent(dc.getInfo().toString());
+        else
+            notifyResponseSent(dc.getInfo().toString());
+    }
+
+    DataCarrier receiveObject() throws IOException, ClassNotFoundException {
+        DataCarrier dc = (DataCarrier) is.readObject();
+        if(dc.isRequest())
+            notifyRequestReceived(dc.getInfo().toString());
+        else
+            notifyResponseReceived(dc.getInfo().toString());
+        return dc;
     }
     
     private void closeConnection(){
@@ -117,6 +147,7 @@ public class Server {
             os.close();
             is.close();
             connection.close();
+            Main.outputVerbose("Server connections closed");
         } catch (IOException e) {
             e.printStackTrace();
             Main.outputError("Error closing connections", e);
@@ -127,10 +158,11 @@ public class Server {
        return connection != null && os != null && is != null;
     }
 
-    private void endServer(){
+    void endServer(){
         try {
             closeConnection();
             serverSocket.close();
+            Main.outputVerbose("Server ended");
         } catch (IOException e) {
             e.printStackTrace();
             Main.outputError("Error ending server", e);
