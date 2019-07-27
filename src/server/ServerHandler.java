@@ -8,7 +8,6 @@ import models.FileContent;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerHandler implements Runnable, RequestSenderInterface {
@@ -87,7 +86,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
         }
     }
 
-    private DataCarrier sendRequest(DataCarrier request, boolean responseRequired){
+    private DataCarrier sendRequest(DataCarrier<LinkedList> request, boolean responseRequired){
         if(server.isServerOff() || server.areStreamsInitialized()){
             String header = request.isRequest()? "Request:" : "Response:";
             Main.outputVerbose(header + " " + request.getInfo() + "failed to send because connection not setup");
@@ -122,28 +121,28 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
 
     @Override
     public DataCarrier getItemsList(){
-        DataCarrier request = new DataCarrier(DC.GET_ITEM_LIST, true);
+        DataCarrier<LinkedList> request = new DataCarrier<>(DC.GET_ITEM_LIST, true);
 
         return sendRequest(request, true);
     }
 
     @Override
     public DataCarrier getItems(LinkedList<String> fileNames) {
-        DataCarrier request = new DataCarrier(DC.GET_ITEMS, fileNames, true);
+        DataCarrier<LinkedList> request = new DataCarrier<>(DC.GET_ITEMS, fileNames, true);
 
         return sendRequest(request, true);
     }
 
     @Override
     public DataCarrier addItems(LinkedList<FileContent> files) {
-        DataCarrier request = new DataCarrier(DC.ADD_ITEMS, files, true);
+        DataCarrier<LinkedList> request = new DataCarrier<>(DC.ADD_ITEMS, files, true);
 
         return sendRequest(request, true);
     }
 
     @Override
     public DataCarrier removeItems(LinkedList<String> fileNames) {
-        DataCarrier request = new DataCarrier(DC.REMOVE_ITEMS, fileNames,true);
+        DataCarrier<LinkedList> request = new DataCarrier<>(DC.REMOVE_ITEMS, fileNames,true);
 
         return sendRequest(request, true);
     }
