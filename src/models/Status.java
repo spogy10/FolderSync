@@ -181,4 +181,10 @@ public class Status implements ItemManager {
 
         return new LinkedList<String>();
     }
+
+    @Override
+    public List<FileContent> getItems(List<String> fileNames) {
+
+        return null;
+    }
 }

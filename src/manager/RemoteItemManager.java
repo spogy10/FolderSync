@@ -70,4 +70,10 @@ public class RemoteItemManager implements ItemManager {
         Main.outputVerbose("Remote get items list failed");
         return new LinkedList<>();
     }
+
+    @Override
+    public List<FileContent> getItems(List<String> fileNames) {
+
+        return null;
+    }
 }

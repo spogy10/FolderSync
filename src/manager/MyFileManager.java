@@ -84,6 +84,12 @@ public class MyFileManager implements ItemManager, FileFilter {
     }
 
     @Override
+    public List<FileContent> getItems(List<String> fileNames) {
+
+        return null;
+    }
+
+    @Override
     public boolean accept(File pathname) {
         boolean isFile, isRightFileType;
 

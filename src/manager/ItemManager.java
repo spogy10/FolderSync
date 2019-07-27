@@ -11,4 +11,6 @@ public interface ItemManager {
     boolean removeItems(List<String> fileNames);
 
     List<String> getItemsList();
+
+    List<FileContent> getItems(List<String> fileNames);
 }
