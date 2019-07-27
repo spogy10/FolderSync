@@ -184,7 +184,6 @@ public class Status implements ItemManager {
 
     @Override
     public List<FileContent> getItems(List<String> fileNames) {
-
         return null;
     }
 }

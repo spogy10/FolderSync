@@ -8,9 +8,11 @@ import java.util.List;
 
 public interface RequestSenderInterface {
 
-    DataCarrier addItems(List<FileContent> files);
+    DataCarrier addItems(LinkedList<FileContent> files);
 
-    DataCarrier removeItems(List<String> fileNames);
+    DataCarrier removeItems(LinkedList<String> fileNames);
 
     DataCarrier getItemsList();
+
+    DataCarrier getItems(LinkedList<String> fileNames);
 }

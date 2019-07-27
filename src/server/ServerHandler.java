@@ -88,6 +88,12 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
     }
 
     private DataCarrier sendRequest(DataCarrier request, boolean responseRequired){
+        if(server.isServerOff() || server.areStreamsInitialized()){
+            String header = request.isRequest()? "Request:" : "Response:";
+            Main.outputVerbose(header + " " + request.getInfo() + "failed to send because connection not setup");
+            return new DataCarrier(DC.CONNECTION_NOT_SETUP, false);
+        }
+
         DataCarrier response = new DataCarrier(DC.SERVER_CONNECTION_ERROR, false);
         try{
             server.sendObject(request);
@@ -122,15 +128,22 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
     }
 
     @Override
-    public DataCarrier addItems(List<FileContent> files) {
-        DataCarrier request = new DataCarrier(DC.ADD_ITEMS, true);
+    public DataCarrier getItems(LinkedList<String> fileNames) {
+        DataCarrier request = new DataCarrier(DC.GET_ITEMS, fileNames, true);
 
         return sendRequest(request, true);
     }
 
     @Override
-    public DataCarrier removeItems(List<String> fileNames) {
-        DataCarrier request = new DataCarrier(DC.REMOVE_ITEMS, true);
+    public DataCarrier addItems(LinkedList<FileContent> files) {
+        DataCarrier request = new DataCarrier(DC.ADD_ITEMS, files, true);
+
+        return sendRequest(request, true);
+    }
+
+    @Override
+    public DataCarrier removeItems(LinkedList<String> fileNames) {
+        DataCarrier request = new DataCarrier(DC.REMOVE_ITEMS, fileNames,true);
 
         return sendRequest(request, true);
     }

@@ -5,6 +5,7 @@ import communication.DataCarrier;
 import main.Main;
 import models.FileContent;
 import server.RequestSenderInterface;
+import server.ServerHandler;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +16,14 @@ public class RemoteItemManager implements ItemManager {
 
 
     public void setRequestSenderInterface(RequestSenderInterface requestSenderInterface) {
+        this.requestSenderInterface = requestSenderInterface;
+    }
+
+    public RemoteItemManager(){
+        requestSenderInterface = ServerHandler.getInstance(this);
+    }
+
+    public RemoteItemManager(RequestSenderInterface requestSenderInterface){
         this.requestSenderInterface = requestSenderInterface;
     }
 
@@ -40,7 +49,7 @@ public class RemoteItemManager implements ItemManager {
 
     @Override
     public boolean addItems(List<FileContent> files) {
-        DataCarrier carrier = requestSenderInterface.addItems(files);
+        DataCarrier carrier = requestSenderInterface.addItems((LinkedList<FileContent>) files);
         if(responseCheck(carrier)){
             Main.outputVerbose("Remote add items succeeded");
             return (boolean) carrier.getData();
@@ -51,7 +60,7 @@ public class RemoteItemManager implements ItemManager {
 
     @Override
     public boolean removeItems(List<String> fileNames) {
-        DataCarrier carrier = requestSenderInterface.removeItems(fileNames);
+        DataCarrier carrier = requestSenderInterface.removeItems((LinkedList<String>) fileNames);
         if(responseCheck(carrier)){
             Main.outputVerbose("Remote remove items succeeded");
             return (boolean) carrier.getData();
@@ -73,7 +82,14 @@ public class RemoteItemManager implements ItemManager {
 
     @Override
     public List<FileContent> getItems(List<String> fileNames) {
-
-        return null;
+        DataCarrier carrier = requestSenderInterface.getItems((LinkedList<String>) fileNames);
+        if(responseCheck(carrier)){
+            Main.outputVerbose("Remote get items succeeded");
+            return (LinkedList<FileContent>) carrier.getData();
+        }
+        Main.outputVerbose("Remote get items failed");
+        return new LinkedList<>();
     }
+
+
 }

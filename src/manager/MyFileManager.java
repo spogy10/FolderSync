@@ -85,8 +85,14 @@ public class MyFileManager implements ItemManager, FileFilter {
 
     @Override
     public List<FileContent> getItems(List<String> fileNames) {
+        LinkedList<FileContent> list = new LinkedList<>();
 
-        return null;
+        for(String fileName : fileNames){
+            list.add(retrieveFile(fileName));
+        }
+
+        Main.outputVerbose("created list of A files");
+        return list;
     }
 
     @Override
@@ -120,5 +126,22 @@ public class MyFileManager implements ItemManager, FileFilter {
         }
 
         return success;
+    }
+
+    private FileContent retrieveFile(String fileName){
+        FileContent fileContent = null;
+
+        try{
+            byte[] data = Files.readAllBytes(new File(folder, fileName).toPath());
+            fileContent = new FileContent(fileName, data);
+            Main.outputVerbose("Retrieved file: "+fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Main.outputError("error retrieving file", e);
+            fileContent = null;
+        }
+
+
+        return fileContent;
     }
 }

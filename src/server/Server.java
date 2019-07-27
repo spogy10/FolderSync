@@ -118,7 +118,7 @@ public class Server {
     }
 
     private void notifyRequestReceived(String request) {
-        Main.outputVerbose("Request for "+request+" received");
+        Main.outputVerbose("Request "+request+" received");
     }
 
     private void notifyResponseReceived(String response){
