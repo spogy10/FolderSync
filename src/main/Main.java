@@ -2,7 +2,6 @@ package main;
 
 import JavaFXHelper.FXHelper;
 import controllers.HomeController;
-import controllers.SyncController;
 import controllers.SyncControllerInterface;
 import exceptions.SaveStatusException;
 import exceptions.SetupStatusException;
@@ -40,7 +39,7 @@ public class Main extends Application {
     private static void onStartUp(){
         Settings settings = Settings.getInstance();
         MyFileManager.getInstance(settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION));
-
+        getBItemManager();
         try {
             if(!Status.setUpStatus())
                 throw new SetupStatusException();

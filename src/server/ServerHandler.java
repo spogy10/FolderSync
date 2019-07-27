@@ -87,9 +87,9 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
     }
 
     private DataCarrier sendRequest(DataCarrier<LinkedList> request, boolean responseRequired){
-        if(server.isServerOff() || server.areStreamsInitialized()){
+        if(server.isServerOff() || !server.areStreamsInitialized()){
             String header = request.isRequest()? "Request:" : "Response:";
-            Main.outputVerbose(header + " " + request.getInfo() + "failed to send because connection not setup");
+            Main.outputVerbose(header + " " + request.getInfo() + " failed to send because connection not setup");
             return new DataCarrier(DC.CONNECTION_NOT_SETUP, false);
         }
 

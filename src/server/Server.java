@@ -1,18 +1,15 @@
 package server;
 
-import communication.DC;
 import communication.DataCarrier;
 import main.Main;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.invoke.VarHandle;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Server {
+public class Server implements Runnable {
     private ServerSocket serverSocket = null;
     private Socket connection = null;
     private ObjectOutputStream os = null;
@@ -53,7 +50,8 @@ public class Server {
     private void setUpConnection() {
         try{
             serverSocket = new ServerSocket(4000, 1);
-            waitForRequests();
+            Thread t = new Thread(this);
+            t.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,8 +69,7 @@ public class Server {
             if(initStreams()){
                 Main.outputVerbose("connection received");
                 if(runnable != null){
-                    Thread t = new Thread(runnable);
-                    t.start();
+                    runnable.run();
                     return;
                 }
                 Main.outputVerbose("Could not start ServerHandler Thread");
@@ -172,6 +169,8 @@ public class Server {
     }
 
 
-
-
+    @Override
+    public void run() {
+        waitForRequests();
+    }
 }
