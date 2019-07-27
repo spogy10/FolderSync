@@ -122,7 +122,7 @@ public class Server {
     }
 
     private void notifyResponseReceived(String response){
-        Main.outputVerbose("Response for "+response+" received");
+        Main.outputVerbose("Response "+response+" received");
     }
 
     void sendObject(DataCarrier dc) throws IOException {

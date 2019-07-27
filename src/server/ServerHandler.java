@@ -4,11 +4,14 @@ import communication.DC;
 import communication.DataCarrier;
 import main.Main;
 import manager.ItemManager;
+import models.FileContent;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ServerHandler implements Runnable {
+public class ServerHandler implements Runnable, RequestSenderInterface {
     private static final String CONNECTION_RESET_EXCEPTION_STRING = "java.net.SocketException: Connection reset";
     private static final String END_OF_FILE_EXCEPTION_STRING = "java.io.EOFException";
 
@@ -94,6 +97,7 @@ public class ServerHandler implements Runnable {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            Main.outputError("Error sending request", e);
         }
 
         return response;
@@ -107,5 +111,27 @@ public class ServerHandler implements Runnable {
 
         unreadResponse.compareAndSet(true, false);
         return tempResponseHolder;
+    }
+
+
+    @Override
+    public DataCarrier getItemsList(){
+        DataCarrier request = new DataCarrier(DC.GET_ITEM_LIST, true);
+
+        return sendRequest(request, true);
+    }
+
+    @Override
+    public DataCarrier addItems(List<FileContent> files) {
+        DataCarrier request = new DataCarrier(DC.ADD_ITEMS, true);
+
+        return sendRequest(request, true);
+    }
+
+    @Override
+    public DataCarrier removeItems(List<String> fileNames) {
+        DataCarrier request = new DataCarrier(DC.REMOVE_ITEMS, true);
+
+        return sendRequest(request, true);
     }
 }
