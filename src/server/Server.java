@@ -1,6 +1,6 @@
 package server;
 
-import communication.DataCarrier;
+import sharedpackage.communication.DataCarrier;
 import main.Main;
 
 import java.io.IOException;

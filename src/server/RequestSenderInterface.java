@@ -1,10 +1,9 @@
 package server;
 
-import communication.DataCarrier;
-import models.FileContent;
+import sharedpackage.communication.DataCarrier;
+import sharedpackage.models.FileContent;
 
 import java.util.LinkedList;
-import java.util.List;
 
 public interface RequestSenderInterface {
 

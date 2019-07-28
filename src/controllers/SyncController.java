@@ -2,7 +2,6 @@ package controllers;
 
 import JavaFXHelper.FXHelper;
 import exceptions.MyFileManagerNotInitializedException;
-import exceptions.StatusNotIntializedException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -10,9 +9,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
 import main.Main;
-import manager.ItemManager;
+import sharedpackage.manager.ItemManager;
 import manager.MyFileManager;
-import manager.RemoteItemManager;
 import models.Status;
 import services.RefreshListService;
 import utility.Resources;

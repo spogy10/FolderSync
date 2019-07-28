@@ -1,9 +1,10 @@
 package manager;
 
-import communication.DC;
-import communication.DataCarrier;
+import sharedpackage.communication.DC;
+import sharedpackage.communication.DataCarrier;
 import main.Main;
-import models.FileContent;
+import sharedpackage.manager.ItemManager;
+import sharedpackage.models.FileContent;
 import server.RequestSenderInterface;
 import server.ServerHandler;
 

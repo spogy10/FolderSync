@@ -2,7 +2,8 @@ package models;
 
 import exceptions.StatusNotIntializedException;
 import main.Main;
-import manager.ItemManager;
+import sharedpackage.manager.ItemManager;
+import sharedpackage.models.FileContent;
 
 import java.io.*;
 import java.util.HashSet;
