@@ -13,7 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import sharedpackage.manager.ItemManager;
+import library.sharedpackage.manager.ItemManager;
 import manager.MyFileManager;
 import manager.RemoteItemManager;
 import models.Status;
@@ -29,11 +29,9 @@ public class Main extends Application {
 
     //todo create user interface
 
-    //todo set up serv socket
-
     //todo set up folder selection
 
-    //todo set up methods to get and pass file data
+    //todo set up methods to get and pass file data - change to better method
 
     private static void onStartUp(){
         Settings settings = Settings.getInstance();

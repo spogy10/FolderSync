@@ -1,11 +1,12 @@
 package server;
 
-import sharedpackage.communication.DataCarrier;
+import library.sharedpackage.communication.DataCarrier;
 import main.Main;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -14,6 +15,8 @@ public class Server implements Runnable {
     private Socket connection = null;
     private ObjectOutputStream os = null;
     private ObjectInputStream is = null;
+
+    private static final long BYTES_IN_2_GB = 2147483648L;
 
     private Runnable runnable;
 
@@ -128,6 +131,111 @@ public class Server implements Runnable {
             notifyRequestSent(dc.getInfo().toString());
         else
             notifyResponseSent(dc.getInfo().toString());
+    }
+
+    public boolean sendFile(DataCarrier dc){ //todo: create these methods
+        //todo https://stackoverflow.com/questions/10367698/java-multiple-file-transfer-over-socket?answertab=votes#tab-top
+        boolean success = false;
+
+        if(dc.isRequest())
+            Main.outputVerbose("Request"+ dc.getInfo() +"to send file commence");
+        else
+            Main.outputVerbose("Response"+ dc.getInfo() +"to send file commence");
+
+        FileInputStream fis = null;
+        try{
+            String absoluteFilePath = (String) dc.getData();
+            File file = new File(absoluteFilePath);
+            fis = new FileInputStream(file);
+            if(FileUtils.sizeOf(file) < BYTES_IN_2_GB)
+                IOUtils.copy(fis, os);
+            else
+                IOUtils.copyLarge(fis, os);
+            success = true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Main.outputError("Error sending file", e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Main.outputError("Error sending file", e);
+        } finally {
+            if(fis == null){
+                success = false;
+            }else{
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Main.outputError("Error closing input stream of send file method", e);
+                    success = false;
+                }
+            }
+        }
+        if(success){
+            if(dc.isRequest())
+                notifyRequestSent(dc.getInfo().toString());
+            else
+                notifyResponseSent(dc.getInfo().toString());
+            return true;
+        }else{
+            if(dc.isRequest())
+                Main.outputVerbose("Could not send file for request: "+ dc.getInfo());
+            else
+                Main.outputVerbose("Could not send file for response: "+ dc.getInfo());
+        }
+
+        return false;
+    }
+
+    public boolean receiveFile(DataCarrier dc) {//todo fix method
+        boolean success = false;
+
+        if(dc.isRequest())
+            Main.outputVerbose("Request"+ dc.getInfo() +"to receive file commence");
+        else
+            Main.outputVerbose("Response"+ dc.getInfo() +"to receive file commence");
+
+        FileOutputStream fos = null;
+        try{
+            String absoluteFilePath = (String) dc.getData();
+            File file = new File(absoluteFilePath);
+            fos = new FileOutputStream(file);
+            fos.write(is.readNBytes(2));
+            success = true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Main.outputError("Error receiving file", e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Main.outputError("Error receiving file", e);
+        } finally {
+            if(fos == null){
+                success = false;
+            }else{
+                try {
+                    fos.flush();
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Main.outputError("Error closing out stream of receive file method", e);
+                    success = false;
+                }
+            }
+        }
+        if(success){
+            if(dc.isRequest())
+                notifyRequestSent(dc.getInfo().toString());
+            else
+                notifyResponseSent(dc.getInfo().toString());
+            return true;
+        }else{
+            if(dc.isRequest())
+                Main.outputVerbose("Could not receive file for request: "+ dc.getInfo());
+            else
+                Main.outputVerbose("Could not receive file for response: "+ dc.getInfo());
+        }
+
+        return false;
     }
 
     DataCarrier receiveObject() throws IOException, ClassNotFoundException {

@@ -2,8 +2,8 @@ package manager;
 
 import exceptions.MyFileManagerNotInitializedException;
 import main.Main;
-import sharedpackage.manager.ItemManager;
-import sharedpackage.models.FileContent;
+import library.sharedpackage.manager.ItemManager;
+import library.sharedpackage.models.FileContent;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -19,7 +19,7 @@ public class MyFileManager implements ItemManager, FileFilter {
 
     private static final String[] FILE_EXTENSIONS = new String[]{"mp4", "mkv", "flv"};
 
-    private final List FILE_EXTENSIONS_LIST;
+    private final List<String> FILE_EXTENSIONS_LIST;
 
     private static MyFileManager instance;
 
@@ -38,7 +38,7 @@ public class MyFileManager implements ItemManager, FileFilter {
 
     private MyFileManager(String folderPath){
         folder = new File(folderPath);
-        FILE_EXTENSIONS_LIST = new LinkedList(Arrays.asList(FILE_EXTENSIONS));
+        FILE_EXTENSIONS_LIST = new LinkedList<>(Arrays.asList(FILE_EXTENSIONS));
     }
 
 

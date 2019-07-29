@@ -1,7 +1,7 @@
 package server;
 
-import sharedpackage.communication.DataCarrier;
-import sharedpackage.models.FileContent;
+import library.sharedpackage.communication.DataCarrier;
+import library.sharedpackage.models.FileContent;
 
 import java.util.LinkedList;
 

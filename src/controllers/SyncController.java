@@ -9,7 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
 import main.Main;
-import sharedpackage.manager.ItemManager;
+import library.sharedpackage.manager.ItemManager;
 import manager.MyFileManager;
 import models.Status;
 import services.RefreshListService;

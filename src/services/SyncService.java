@@ -3,7 +3,7 @@ package services;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import main.Main;
-import sharedpackage.manager.ItemManager;
+import library.sharedpackage.manager.ItemManager;
 import manager.MyFileManager;
 import manager.MySyncManager;
 import manager.SyncManager;

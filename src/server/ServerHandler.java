@@ -1,10 +1,10 @@
 package server;
 
-import sharedpackage.communication.DC;
-import sharedpackage.communication.DataCarrier;
+import library.sharedpackage.communication.DC;
+import library.sharedpackage.communication.DataCarrier;
 import main.Main;
-import sharedpackage.manager.ItemManager;
-import sharedpackage.models.FileContent;
+import library.sharedpackage.manager.ItemManager;
+import library.sharedpackage.models.FileContent;
 
 import java.io.IOException;
 import java.util.LinkedList;

@@ -6,7 +6,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ProgressIndicator;
-import sharedpackage.manager.ItemManager;
+import library.sharedpackage.manager.ItemManager;
 
 import java.util.LinkedList;
 import java.util.List;
