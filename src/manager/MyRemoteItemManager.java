@@ -2,8 +2,8 @@ package manager;
 
 import library.sharedpackage.communication.DC;
 import library.sharedpackage.communication.DataCarrier;
+import library.sharedpackage.manager.RemoteItemManager;
 import main.Main;
-import library.sharedpackage.manager.ItemManager;
 import library.sharedpackage.models.FileContent;
 import server.RequestSenderInterface;
 import server.ServerHandler;
@@ -11,7 +11,7 @@ import server.ServerHandler;
 import java.util.LinkedList;
 import java.util.List;
 
-public class RemoteItemManager implements ItemManager {
+public class MyRemoteItemManager implements RemoteItemManager {
 
     private RequestSenderInterface requestSenderInterface;
 
@@ -20,11 +20,11 @@ public class RemoteItemManager implements ItemManager {
         this.requestSenderInterface = requestSenderInterface;
     }
 
-    public RemoteItemManager(){
+    public MyRemoteItemManager(){
         requestSenderInterface = ServerHandler.getInstance(this);
     }
 
-    public RemoteItemManager(RequestSenderInterface requestSenderInterface){
+    public MyRemoteItemManager(RequestSenderInterface requestSenderInterface){
         this.requestSenderInterface = requestSenderInterface;
     }
 

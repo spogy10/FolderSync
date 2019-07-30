@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import library.sharedpackage.manager.ItemManager;
 import manager.MyFileManager;
-import manager.RemoteItemManager;
+import manager.MyRemoteItemManager;
 import models.Status;
 import services.SyncService;
 import utility.Settings;
@@ -108,7 +108,7 @@ public class Main extends Application {
     public static ItemManager getBItemManager(){
         outputVerbose("Get bItemManager");
         if(bItemManager == null){
-            bItemManager = new RemoteItemManager();
+            bItemManager = new MyRemoteItemManager();
             outputVerbose("bItemManager set to remote manager");
         }
 

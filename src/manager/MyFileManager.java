@@ -4,6 +4,7 @@ import exceptions.MyFileManagerNotInitializedException;
 import main.Main;
 import library.sharedpackage.manager.ItemManager;
 import library.sharedpackage.models.FileContent;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -43,16 +44,16 @@ public class MyFileManager implements ItemManager, FileFilter {
 
 
 
-    @Override
-    public boolean addItems(List<FileContent> files) {
-        boolean success = true;
-        for(FileContent file : files){
-            if(!createFile(file))
-                success = false;
-        }
-
-        return success;
-    }
+//    @Override
+//    public boolean addItems(List<FileContent> files) {
+//        boolean success = true;
+//        for(FileContent file : files){
+//            if(!createFile(file))
+//                success = false;
+//        }
+//
+//        return success;
+//    }
 
     @Override
     public boolean removeItems(List<String> fileNames) {
@@ -115,31 +116,28 @@ public class MyFileManager implements ItemManager, FileFilter {
         return (lastIndex > 0) ? fileName.substring(++lastIndex) : "";
     }
 
-    private boolean createFile(FileContent fileContent){
-        boolean success = false;
-        try {
-            Files.write(new File(folder, fileContent.getFileName()).toPath(), fileContent.getData());
-            success = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.outputError("Error unable to create file :"+fileContent.getFileName(), e);
-            success = false;
-        }
-
-        return success;
-    }
+//    private boolean createFile(FileContent fileContent){
+//        boolean success = false;
+//        try {
+//            Files.write(new File(folder, fileContent.getFileName()).toPath(), fileContent.getFileSize());
+//            success = true;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Main.outputError("Error unable to create file :"+fileContent.getFileName(), e);
+//            success = false;
+//        }
+//
+//        return success;
+//    }
 
     private FileContent retrieveFile(String fileName){
         FileContent fileContent = null;
 
-        try{
-            byte[] data = Files.readAllBytes(new File(folder, fileName).toPath());
-            fileContent = new FileContent(fileName, data);
-            Main.outputVerbose("Retrieved file: "+fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.outputError("error retrieving file", e);
-            fileContent = null;
+        File file = new File(folder, fileName);
+        if(file.isFile()){
+            fileContent = new FileContent(fileName, FileUtils.sizeOf(file));
+        }else{
+            Main.outputVerbose("error retrieving file:" + fileName +  "does not exist");
         }
 
 

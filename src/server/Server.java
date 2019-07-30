@@ -1,12 +1,13 @@
 package server;
 
 import library.sharedpackage.communication.DataCarrier;
+import library.sharedpackage.models.FileContent;
 import main.Main;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import utility.Settings;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -15,8 +16,6 @@ public class Server implements Runnable {
     private Socket connection = null;
     private ObjectOutputStream os = null;
     private ObjectInputStream is = null;
-
-    private static final long BYTES_IN_2_GB = 2147483648L;
 
     private Runnable runnable;
 
@@ -133,7 +132,7 @@ public class Server implements Runnable {
             notifyResponseSent(dc.getInfo().toString());
     }
 
-    public boolean sendFile(DataCarrier dc){ //todo: create these methods
+    public boolean sendFile(DataCarrier<FileContent> dc){ //todo: create these methods
         //todo https://stackoverflow.com/questions/10367698/java-multiple-file-transfer-over-socket?answertab=votes#tab-top
         boolean success = false;
 
@@ -144,10 +143,11 @@ public class Server implements Runnable {
 
         FileInputStream fis = null;
         try{
-            String absoluteFilePath = (String) dc.getData();
-            File file = new File(absoluteFilePath);
+            FileContent fileContent = dc.getData();
+            String folderPath = Settings.getInstance().getValue(Settings.SettingsKeys.FOLDER_LOCATION);
+            File file = new File(folderPath, fileContent.getFileName());
             fis = new FileInputStream(file);
-            if(FileUtils.sizeOf(file) < BYTES_IN_2_GB)
+            if(FileUtils.sizeOf(file) < (FileUtils.ONE_GB * 2))
                 IOUtils.copy(fis, os);
             else
                 IOUtils.copyLarge(fis, os);
@@ -187,7 +187,7 @@ public class Server implements Runnable {
         return false;
     }
 
-    public boolean receiveFile(DataCarrier dc) {//todo fix method
+    public boolean receiveFile(DataCarrier<FileContent> dc) {//todo fix method
         boolean success = false;
 
         if(dc.isRequest())
@@ -197,10 +197,19 @@ public class Server implements Runnable {
 
         FileOutputStream fos = null;
         try{
-            String absoluteFilePath = (String) dc.getData();
-            File file = new File(absoluteFilePath);
+            FileContent fileContent = dc.getData();
+            String folderPath = Settings.getInstance().getValue(Settings.SettingsKeys.FOLDER_LOCATION);
+            File file = new File(folderPath, fileContent.getFileName());
             fos = new FileOutputStream(file);
-            fos.write(is.readNBytes(2));
+
+            int n;
+            long fileSize = fileContent.getFileSize();
+            byte[] buffer = new byte[1024 * 4];
+            while ( (fileSize > 0) && (IOUtils.EOF != (n = is.read(buffer, 0, (int)Math.min(buffer.length, fileSize)))) ) { //checks if fileSize is 0 or if EOF sent
+                fos.write(buffer, 0, n);
+                fileSize -= n;
+            }
+
             success = true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

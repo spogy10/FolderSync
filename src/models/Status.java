@@ -140,23 +140,23 @@ public class Status implements ItemManager {
         status.removeAll(fileNames);
     }
 
-    @Override
-    public boolean addItems(List<FileContent> files) {
-        String errorMessage = "Status not initialized in addToStatus method";
-
-        try{
-            isStatusInitialized();
-        } catch (StatusNotIntializedException e) {
-            Main.outputError(errorMessage, e);
-            initializeStatus();
-            return false;
-        }
-        for(FileContent fileName : files){
-            status.add(fileName.getFileName());
-        }
-
-        return true;
-    }
+//    @Override
+//    public boolean addItems(List<FileContent> files) {
+//        String errorMessage = "Status not initialized in addToStatus method";
+//
+//        try{
+//            isStatusInitialized();
+//        } catch (StatusNotIntializedException e) {
+//            Main.outputError(errorMessage, e);
+//            initializeStatus();
+//            return false;
+//        }
+//        for(FileContent fileName : files){
+//            status.add(fileName.getFileName());
+//        }
+//
+//        return true;
+//    }
 
     @Override
     public boolean removeItems(List<String> fileNames) {
@@ -180,7 +180,7 @@ public class Status implements ItemManager {
             Main.outputError("Error in getItemList for Status", e);
         }
 
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 
     @Override
