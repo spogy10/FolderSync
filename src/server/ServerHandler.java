@@ -127,14 +127,14 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
     }
 
     @Override
-    public DataCarrier getItems(LinkedList<String> fileNames) {
+    public DataCarrier getItems(LinkedList<String> fileNames) { //todo: change functionality to match Sever receive files
         DataCarrier<LinkedList> request = new DataCarrier<>(DC.GET_ITEMS, fileNames, true);
 
         return sendRequest(request, true);
     }
 
     @Override
-    public DataCarrier addItems(LinkedList<FileContent> files) {
+    public DataCarrier addItems(LinkedList<FileContent> files) { //todo: change functionality to match server send files
         DataCarrier<LinkedList> request = new DataCarrier<>(DC.ADD_ITEMS, files, true);
 
         return sendRequest(request, true);
