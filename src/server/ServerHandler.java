@@ -5,12 +5,14 @@ import library.sharedpackage.communication.DataCarrier;
 import main.Main;
 import library.sharedpackage.manager.ItemManager;
 import library.sharedpackage.models.FileContent;
+import manager.MyRemoteItemManager;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ServerHandler implements Runnable, RequestSenderInterface {
+public class ServerHandler implements Runnable, RequestSenderInterface { //todo: create tests for send file methods
     private static final String CONNECTION_RESET_EXCEPTION_STRING = "java.net.SocketException: Connection reset";
     private static final String END_OF_FILE_EXCEPTION_STRING = "java.io.EOFException";
 
@@ -86,7 +88,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
         }
     }
 
-    private DataCarrier sendRequest(DataCarrier<LinkedList> request, boolean responseRequired){
+    private DataCarrier sendRequest(DataCarrier request, boolean responseRequired){
         if(server.isServerOff() || !server.areStreamsInitialized()){
             String header = request.isRequest()? "Request:" : "Response:";
             Main.outputVerbose(header + " " + request.getInfo() + " failed to send because connection not setup");
@@ -107,6 +109,40 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
 
         return response;
     }
+
+    private DataCarrier sendFiles(DataCarrier<LinkedList<FileContent>> request) {
+        boolean success = true;
+        DataCarrier cancelRequest = new DataCarrier(DC.CANCEL_OPERATION,true);
+        DataCarrier<Boolean> finalResponse = new DataCarrier<>(DC.GENERAL_ERROR, false, false);
+        DataCarrier initialResponse = sendRequest(request, true);
+
+        if(!MyRemoteItemManager.responseCheck(initialResponse)){
+            Main.outputVerbose("Error in Server Handler sendFiles, response check returned false");
+            sendRequest(cancelRequest, false);
+            finalResponse.setInfo(DC.REMOTE_SERVER_ERROR);
+            return finalResponse;
+        }
+
+        if(!initialResponse.getInfo().equals(DC.OK_TO_SEND_FILES)){
+            Main.outputVerbose("Error in Server Handler sendFiles, remote server not ready to handle files");
+            return finalResponse;
+        }
+
+        Main.outputVerbose("Remote server ready to handle files");
+
+        List<FileContent> files = request.getData();
+        for(FileContent fileContent : files){
+            Main.outputVerbose("Attempting to send "+fileContent.getFileName());
+            DataCarrier<FileContent> sendFile = new DataCarrier<>(DC.ADD_ITEMS, fileContent, true);
+            success = server.sendFile(sendFile) && success;
+        }
+
+        finalResponse.setInfo(DC.NO_ERROR);
+        finalResponse.setData(success);
+
+        return finalResponse;
+    }
+
 
     private DataCarrier waitForResponse() {
         while(!unreadResponse.get()){
@@ -134,10 +170,10 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
     }
 
     @Override
-    public DataCarrier addItems(LinkedList<FileContent> files) { //todo: change functionality to match server send files
-        DataCarrier<LinkedList> request = new DataCarrier<>(DC.ADD_ITEMS, files, true);
+    public DataCarrier addItems(LinkedList<FileContent> files) {
+        DataCarrier<LinkedList<FileContent>> request = new DataCarrier<>(DC.ADD_ITEMS, files, true);
 
-        return sendRequest(request, true);
+        return sendFiles(request);
     }
 
     @Override

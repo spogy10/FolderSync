@@ -28,7 +28,7 @@ public class MyRemoteItemManager implements RemoteItemManager {
         this.requestSenderInterface = requestSenderInterface;
     }
 
-    private static boolean responseCheck(DataCarrier response) {
+    public static boolean responseCheck(DataCarrier response) {
         if(!response.isRequest()) {
             if (response.getInfo().equals(DC.NO_ERROR)) {
                 Main.outputVerbose("NO ERROR");
@@ -37,15 +37,25 @@ public class MyRemoteItemManager implements RemoteItemManager {
 
             if (response.getInfo().equals(DC.SERVER_CONNECTION_ERROR)) {
                 Main.outputVerbose("SERVER CONNECTION ERROR");
+                return false;
+            }
+
+            if (response.getInfo().equals(DC.REMOTE_SERVER_ERROR)) {
+                Main.outputVerbose("REMOTE SERVER ERROR");
+                return false;
             }
 
             if (response.getInfo().equals(DC.GENERAL_ERROR)) {
                 Main.outputVerbose("GENERAL ERROR");
+                return false;
             }
-        }else{
-            Main.outputVerbose("Response set as request");
+            return true;
         }
+
+        Main.outputVerbose("Response set as request");
+
         return false;
+
     }
 
     @Override
