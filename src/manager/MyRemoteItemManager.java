@@ -30,32 +30,17 @@ public class MyRemoteItemManager implements RemoteItemManager {
 
     public static boolean responseCheck(DataCarrier response) {
         if(!response.isRequest()) {
-            if (response.getInfo().equals(DC.NO_ERROR)) {
-                Main.outputVerbose("NO ERROR");
+            if (!response.getInfo().IsErrorCode) {
+                Main.outputVerbose("No Error Code");
                 return true;
             }
 
-            if (response.getInfo().equals(DC.SERVER_CONNECTION_ERROR)) {
-                Main.outputVerbose("SERVER CONNECTION ERROR");
-                return false;
-            }
-
-            if (response.getInfo().equals(DC.REMOTE_SERVER_ERROR)) {
-                Main.outputVerbose("REMOTE SERVER ERROR");
-                return false;
-            }
-
-            if (response.getInfo().equals(DC.GENERAL_ERROR)) {
-                Main.outputVerbose("GENERAL ERROR");
-                return false;
-            }
-            return true;
+            Main.outputVerbose(response.getInfo().toReadableString());
         }
 
         Main.outputVerbose("Response set as request");
 
         return false;
-
     }
 
     @Override
