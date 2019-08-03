@@ -21,7 +21,7 @@ public class Settings implements SettingInterface {
     private static final String escapeCharacter = "\\";
     private static final String characterToEscape = "\"";
 
-    private static final String DEFAULT_FOLDER_LOCATION = "E:\\poliv\\Videos\\TEW BII WATCHED";
+    private static final String DEFAULT_FOLDER_LOCATION = "E:\\poliv\\Videos\\TEW BII WATCHED\\test";
 
     public static Settings getInstance(){
         if(instance == null)

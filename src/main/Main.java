@@ -59,6 +59,12 @@ public class Main extends Application {
             e.printStackTrace();
             outputError(saveStatusErrorMessage, e);
         }
+
+        boolean settingsSaved = Settings.getInstance().saveSettings();
+
+        outputVerbose("Settings Saved? -- "+settingsSaved);
+
+        System.exit(0);
     }
 
     public static void main(String[] args) {
@@ -87,7 +93,7 @@ public class Main extends Application {
                 event.consume();
                 try {
                     if(FXHelper.closeProgram(this, primaryStage))
-                        System.exit(0);
+                        primaryStage.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
