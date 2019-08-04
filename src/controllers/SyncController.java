@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
+import library.sharedpackage.models.FileContent;
 import main.Main;
 import library.sharedpackage.manager.ItemManager;
 import manager.MyFileManager;
@@ -17,6 +18,9 @@ import utility.Resources;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class SyncController implements Initializable, SyncControllerInterface {
@@ -50,6 +54,29 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
     @FXML
     public void btnSyncOnClick() {
+        try {
+            test();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Main.outputError("Error with test", e);
+        }
+    }
+
+    private static void test() throws MyFileManagerNotInitializedException { //todo: remove
+        //todo: current problem, remote does not immediatly end send file connection
+        List<String> fileNames = new LinkedList<>(Arrays.asList(new String[]{"testFile.mp4"}));
+        List<FileContent> files = MyFileManager.getInstance().getItems(fileNames);
+
+        //files.get(0).setFileName("testFile.mp4");
+
+        for(FileContent file : files){
+            Main.outputVerbose(file.toString());
+        }
+
+        Thread t = new Thread(() -> {
+            Main.getRemoteItemManager().addItems(files);
+        });
+        t.start();
     }
 
     @FXML
