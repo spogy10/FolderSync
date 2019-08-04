@@ -13,7 +13,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import library.sharedpackage.manager.ItemManager;
+import library.sharedpackage.manager.RemoteItemManager;
+import library.sharedpackage.models.FileContent;
 import manager.MyFileManager;
 import manager.MyRemoteItemManager;
 import models.Status;
@@ -24,7 +25,7 @@ import java.io.IOException;
 
 public class Main extends Application {
 
-    private static ItemManager bItemManager;
+    private static RemoteItemManager remoteItemManager;
     private static SyncControllerInterface syncControllerInterface;
 
     //todo create user interface
@@ -36,7 +37,7 @@ public class Main extends Application {
     private static void onStartUp(){
         Settings settings = Settings.getInstance();
         MyFileManager.getInstance(settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION));
-        getBItemManager();
+        getRemoteItemManager();
         try {
             if(!Status.setUpStatus())
                 throw new SetupStatusException();
@@ -101,25 +102,25 @@ public class Main extends Application {
         });
     }
 
-    public static void sync(){ //todo: include sync loading ui
+    public static void sync(){ //todo: include sync loading ui, finish this
         SyncService syncService = new SyncService();
         syncService.restart();
     }
 
-    public static void setBItemManager(ItemManager manager){
-        bItemManager = manager;
+    public static void setBItemManager(RemoteItemManager manager){
+        remoteItemManager = manager;
         outputVerbose("bItemManager Set");
     }
 
-    public static ItemManager getBItemManager(){
+    public static RemoteItemManager getRemoteItemManager(){
         outputVerbose("Get bItemManager");
-        if(bItemManager == null){
-            bItemManager = new MyRemoteItemManager();
+        if(remoteItemManager == null){
+            remoteItemManager = new MyRemoteItemManager();
             outputVerbose("bItemManager set to remote manager");
         }
 
 
-        return bItemManager;
+        return remoteItemManager;
     }
 
     public static void setSyncControllerInterface(SyncControllerInterface syncControllerInterface){

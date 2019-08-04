@@ -25,7 +25,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
     private ItemManager fileManager = MyFileManager.getInstance();
     private ItemManager statusManager = new Status();
-    private ItemManager remoteManager = Main.getBItemManager();
+    private ItemManager remoteManager = Main.getRemoteItemManager();
 
     @FXML
     private Button btnBack, btnClearStatusList, btnRefreshList, btnSync;

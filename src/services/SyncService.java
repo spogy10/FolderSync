@@ -24,7 +24,7 @@ public class SyncService extends Service<Void> {
     protected Task<Void> createTask() {
         try{
             fileManager = MyFileManager.getInstance();
-            remoteManager = Main.getBItemManager();
+            remoteManager = Main.getRemoteItemManager();
             SyncManager syncManager = MySyncManager.getInstance();
             
             Changes changes = syncManager.sync(fileManager.getItemsList(), remoteManager.getItemsList(), Status.getStatusList());

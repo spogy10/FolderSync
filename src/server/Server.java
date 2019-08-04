@@ -58,7 +58,7 @@ public class Server implements Runnable {
             int backLog = Integer.parseInt(settings.getValue(Settings.SettingsKeys.SERVER_BACKLOG));
 
             serverSocket = new ServerSocket(port, backLog);
-            t = new Thread(this);
+            t = new Thread(this, "Server Thread");
             t.start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,10 +95,6 @@ public class Server implements Runnable {
         Main.outputVerbose("Restarting Server");
         endServer();
         setUpConnection();
-    }
-
-    synchronized void resumeThread(){ //todo: correct this implementation
-        t.notify();
     }
 
 
