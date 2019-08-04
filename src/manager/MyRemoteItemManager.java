@@ -35,9 +35,9 @@ public class MyRemoteItemManager implements RemoteItemManager {
             }
 
             Main.outputVerbose(response.getInfo().toReadableString());
+        }else{
+            Main.outputVerbose("Response set as request");
         }
-
-        Main.outputVerbose("Response set as request");
 
         return false;
     }
