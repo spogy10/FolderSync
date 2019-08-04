@@ -42,19 +42,6 @@ public class MyFileManager implements ItemManager, FileFilter {
         FILE_EXTENSIONS_LIST = new LinkedList<>(Arrays.asList(FILE_EXTENSIONS));
     }
 
-
-
-//    @Override
-//    public boolean addItems(List<FileContent> files) {
-//        boolean success = true;
-//        for(FileContent file : files){
-//            if(!createFile(file))
-//                success = false;
-//        }
-//
-//        return success;
-//    }
-
     @Override
     public boolean removeItems(List<String> fileNames) {
         boolean success = true;
@@ -115,20 +102,6 @@ public class MyFileManager implements ItemManager, FileFilter {
 
         return (lastIndex > 0) ? fileName.substring(++lastIndex) : "";
     }
-
-//    private boolean createFile(FileContent fileContent){
-//        boolean success = false;
-//        try {
-//            Files.write(new File(folder, fileContent.getFileName()).toPath(), fileContent.getFileSize());
-//            success = true;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Main.outputError("Error unable to create file :"+fileContent.getFileName(), e);
-//            success = false;
-//        }
-//
-//        return success;
-//    }
 
     private FileContent retrieveFile(String fileName){
         FileContent fileContent = null;
