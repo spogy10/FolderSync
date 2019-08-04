@@ -17,6 +17,7 @@ public class Server implements Runnable {
     private ObjectOutputStream os = null;
     private ObjectInputStream is = null;
     private Thread t;
+    private Settings settings = Settings.getInstance();
 
 
     private Runnable runnable;
@@ -53,7 +54,10 @@ public class Server implements Runnable {
 
     private void setUpConnection() {
         try{
-            serverSocket = new ServerSocket(4000, 1);
+            int port = Integer.parseInt(settings.getValue(Settings.SettingsKeys.SERVER_PORT_NUMBER));
+            int backLog = Integer.parseInt(settings.getValue(Settings.SettingsKeys.SERVER_BACKLOG));
+
+            serverSocket = new ServerSocket(port, backLog);
             t = new Thread(this);
             t.start();
         } catch (IOException e) {
@@ -93,11 +97,7 @@ public class Server implements Runnable {
         setUpConnection();
     }
 
-    void pauseThread() throws InterruptedException {
-        t.wait();
-    }
-
-    void unPauseThread(){
+    synchronized void resumeThread(){ //todo: correct this implementation
         t.notify();
     }
 
@@ -142,8 +142,7 @@ public class Server implements Runnable {
             notifyResponseSent(dc.getInfo().toString());
     }
 
-    public boolean sendFile(DataCarrier<FileContent> dc){ //todo: create these methods
-        //todo https://stackoverflow.com/questions/10367698/java-multiple-file-transfer-over-socket?answertab=votes#tab-top
+    boolean sendFile(DataCarrier<FileContent> dc){ //todo: create these methods https://stackoverflow.com/questions/10367698/java-multiple-file-transfer-over-socket?answertab=votes#tab-top
         boolean success = false;
 
         if(dc.isRequest())
@@ -154,7 +153,7 @@ public class Server implements Runnable {
         FileInputStream fis = null;
         try{
             FileContent fileContent = dc.getData();
-            String folderPath = Settings.getInstance().getValue(Settings.SettingsKeys.FOLDER_LOCATION);
+            String folderPath = settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION);
             File file = new File(folderPath, fileContent.getFileName());
             fis = new FileInputStream(file);
             if(FileUtils.sizeOf(file) < (FileUtils.ONE_GB * 2))
@@ -197,7 +196,7 @@ public class Server implements Runnable {
         return false;
     }
 
-    public boolean receiveFile(DataCarrier<FileContent> dc) {
+    boolean receiveFile(DataCarrier<FileContent> dc) {
         boolean success = false;
 
         if(dc.isRequest())
@@ -208,7 +207,7 @@ public class Server implements Runnable {
         FileOutputStream fos = null;
         try{
             FileContent fileContent = dc.getData();
-            String folderPath = Settings.getInstance().getValue(Settings.SettingsKeys.FOLDER_LOCATION);
+            String folderPath = settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION);
             File file = new File(folderPath, fileContent.getFileName());
             fos = new FileOutputStream(file);
 
@@ -278,7 +277,7 @@ public class Server implements Runnable {
         }
     }
     
-    public boolean areStreamsInitialized(){
+    boolean areStreamsInitialized(){
        return connection != null && os != null && is != null;
     }
 

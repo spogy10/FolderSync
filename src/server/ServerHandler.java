@@ -59,6 +59,14 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
                     tempResponseHolder = carrier;
                     unreadResponse.compareAndSet(false, true);
 
+                    if(carrier.getInfo() == DC.OK_TO_SEND_FILES || carrier.getInfo() == DC.GET_ITEMS){
+                        try {
+                            wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Main.outputError("wait threw an error",e);
+                        }
+                    }
                 }
             }
             Main.outputVerbose("client disconnected from server normally");
@@ -109,6 +117,16 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         return response;
     }
 
+    private DataCarrier waitForResponse() {
+        while(!unreadResponse.get()){
+            /*wait until response comes in*/
+            Thread.onSpinWait();
+        }
+
+        unreadResponse.compareAndSet(true, false);
+        return tempResponseHolder;
+    }
+
     private DataCarrier sendFiles(DataCarrier<LinkedList<FileContent>> request) {
         boolean success = true;
         DataCarrier cancelRequest = new DataCarrier(DC.CANCEL_OPERATION,true);
@@ -116,6 +134,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         DataCarrier initialResponse = sendRequest(request, true);
 
         if(!MyRemoteItemManager.responseCheck(initialResponse)){
+            server.resumeThread();
             Main.outputVerbose("Error in Server Handler sendFiles, response check returned false");
             sendRequest(cancelRequest, false);
             finalResponse.setInfo(DC.REMOTE_SERVER_ERROR);
@@ -123,6 +142,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         }
 
         if(!initialResponse.getInfo().equals(DC.OK_TO_SEND_FILES)){
+            server.resumeThread();
             Main.outputVerbose("Error in Server Handler sendFiles, remote server not ready to handle files");
             return finalResponse;
         }
@@ -139,6 +159,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         finalResponse.setInfo(DC.NO_ERROR);
         finalResponse.setData(success);
 
+        server.resumeThread();
         return finalResponse;
     }
 
@@ -149,6 +170,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         DataCarrier initialResponse = sendRequest(request, true);
 
         if(!MyRemoteItemManager.responseCheck(initialResponse)){
+            server.resumeThread();
             Main.outputVerbose("Error in Server Handler receiveFiles, response check returned false");
             sendRequest(cancelRequest, false);
             finalResponse.setInfo(DC.REMOTE_SERVER_ERROR);
@@ -156,9 +178,11 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         }
 
         if(!initialResponse.getInfo().equals(DC.GET_ITEMS)){
+            server.resumeThread();
             Main.outputVerbose("Error in Server Handler receiveFiles, remote server did not send correct response");
             return finalResponse;
         }else if ( !( (initialResponse.getData() instanceof LinkedList) && ((LinkedList) initialResponse.getData()).get(0) instanceof FileContent ) ){
+            server.resumeThread();
             Main.outputVerbose("Error in Server Handler receiveFiles, remote server did not send correct data");
             return finalResponse;
         }
@@ -176,18 +200,8 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         finalResponse.setInfo(success? DC.NO_ERROR : DC.GENERAL_ERROR);
         finalResponse.setData(files);
 
+        server.resumeThread();
         return finalResponse;
-    }
-
-
-    private DataCarrier waitForResponse() {
-        while(!unreadResponse.get()){
-            /*wait until response comes in*/
-            Thread.onSpinWait();
-        }
-
-        unreadResponse.compareAndSet(true, false);
-        return tempResponseHolder;
     }
 
 

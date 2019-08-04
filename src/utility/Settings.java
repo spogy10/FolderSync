@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 @SuppressWarnings("Duplicates")
 public class Settings implements SettingInterface {
-    public static Settings instance = null;
+    private static Settings instance = null;
 
     private static final String SETTING_FILE_NAME = "Settings.txt";
 
@@ -22,6 +22,8 @@ public class Settings implements SettingInterface {
     private static final String characterToEscape = "\"";
 
     private static final String DEFAULT_FOLDER_LOCATION = "E:\\poliv\\Videos\\TEW BII WATCHED\\test";
+    private static final int DEFAULT_SERVER_PORT_NUMBER = 4000;
+    private static final int DEFAULT_SERVER_BACKLOG = 1;
 
     public static Settings getInstance(){
         if(instance == null)
@@ -37,7 +39,7 @@ public class Settings implements SettingInterface {
 
     }
 
-    public String getValue(String key){
+    private String getValue(String key){
         return settingsMap.get(key);
     }
 
@@ -144,6 +146,8 @@ public class Settings implements SettingInterface {
     public void resetSettings() {
         settingsMap = new HashMap<>();
         settingsMap.put(String.valueOf(SettingsKeys.FOLDER_LOCATION), DEFAULT_FOLDER_LOCATION);
+        settingsMap.put(String.valueOf(SettingsKeys.SERVER_PORT_NUMBER), String.valueOf(DEFAULT_SERVER_PORT_NUMBER));
+        settingsMap.put(String.valueOf(SettingsKeys.SERVER_BACKLOG), String.valueOf(DEFAULT_SERVER_BACKLOG));
     }
 
     public static String escapeString(String string){
@@ -169,6 +173,8 @@ public class Settings implements SettingInterface {
 
 
     public enum SettingsKeys{
-        FOLDER_LOCATION
+        FOLDER_LOCATION,
+        SERVER_PORT_NUMBER,
+        SERVER_BACKLOG
     }
 }
