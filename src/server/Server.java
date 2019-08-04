@@ -142,9 +142,9 @@ public class Server implements Runnable {
         boolean success = false;
 
         if(dc.isRequest())
-            Main.outputVerbose("Request"+ dc.getInfo() +"to send file commence");
+            Main.outputVerbose("Request "+ dc.getInfo() +" to send file commence");
         else
-            Main.outputVerbose("Response"+ dc.getInfo() +"to send file commence");
+            Main.outputVerbose("Response "+ dc.getInfo() +" to send file commence");
 
         FileInputStream fis = null;
         try{
@@ -196,9 +196,9 @@ public class Server implements Runnable {
         boolean success = false;
 
         if(dc.isRequest())
-            Main.outputVerbose("Request"+ dc.getInfo() +"to receive file commence");
+            Main.outputVerbose("Request "+ dc.getInfo() +" to receive file commence");
         else
-            Main.outputVerbose("Response"+ dc.getInfo() +"to receive file commence");
+            Main.outputVerbose("Response "+ dc.getInfo() +" to receive file commence");
 
         FileOutputStream fos = null;
         try{
