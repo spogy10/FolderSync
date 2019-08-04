@@ -153,8 +153,13 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         for(FileContent fileContent : files){
             Main.outputVerbose("Attempting to send "+fileContent.getFileName());
             DataCarrier<FileContent> sendFile = new DataCarrier<>(DC.ADD_ITEMS, fileContent, true);
-            success = server.sendFile(sendFile) && success;
+            boolean currentSuccess = server.sendFile(sendFile);
+            Main.outputVerbose("Sending "+fileContent.getFileName()+": "+currentSuccess);
+
+            success = currentSuccess && success;
         }
+
+        Main.outputVerbose("Finished sending files: "+success);
 
         finalResponse.setInfo(DC.NO_ERROR);
         finalResponse.setData(success);
@@ -194,8 +199,13 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         for(FileContent fileContent : files){
             Main.outputVerbose("Attempting to receive "+fileContent.getFileName());
             DataCarrier<FileContent> receiveFile = new DataCarrier<>(DC.GET_ITEMS, fileContent, false);
-            success = server.receiveFile(receiveFile) && success;
+            boolean currentSuccess = server.receiveFile(receiveFile);
+            Main.outputVerbose("Receiving "+fileContent.getFileName()+": "+currentSuccess);
+
+            success = currentSuccess && success;
         }
+
+        Main.outputVerbose("Finished receiving files: "+success);
 
         finalResponse.setInfo(success? DC.NO_ERROR : DC.GENERAL_ERROR);
         finalResponse.setData(files);
@@ -213,7 +223,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
     }
 
     @Override
-    public DataCarrier getItems(LinkedList<String> fileNames) { //todo: change functionality to match Sever receive files
+    public DataCarrier getItems(LinkedList<String> fileNames) {
         DataCarrier<LinkedList<String>> request = new DataCarrier<>(DC.GET_ITEMS, fileNames, true);
 
         return receiveFiles(request);
