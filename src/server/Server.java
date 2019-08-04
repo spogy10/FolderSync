@@ -16,6 +16,8 @@ public class Server implements Runnable {
     private Socket connection = null;
     private ObjectOutputStream os = null;
     private ObjectInputStream is = null;
+    private Thread t;
+
 
     private Runnable runnable;
 
@@ -52,7 +54,7 @@ public class Server implements Runnable {
     private void setUpConnection() {
         try{
             serverSocket = new ServerSocket(4000, 1);
-            Thread t = new Thread(this);
+            t = new Thread(this);
             t.start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,6 +91,14 @@ public class Server implements Runnable {
         Main.outputVerbose("Restarting Server");
         endServer();
         setUpConnection();
+    }
+
+    void pauseThread() throws InterruptedException {
+        t.wait();
+    }
+
+    void unPauseThread(){
+        t.notify();
     }
 
 
@@ -187,7 +197,7 @@ public class Server implements Runnable {
         return false;
     }
 
-    public boolean receiveFile(DataCarrier<FileContent> dc) {//todo fix method
+    public boolean receiveFile(DataCarrier<FileContent> dc) {
         boolean success = false;
 
         if(dc.isRequest())

@@ -54,7 +54,6 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
                 DataCarrier carrier = server.receiveObject();
                 if(carrier.isRequest()){
                     action = carrier.getInfo();
-                    //response = new DataCarrier(DC.NO_ERROR,false);
                     caseStatements(carrier);
                 }else {//it is a response
                     tempResponseHolder = carrier;
@@ -143,6 +142,43 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         return finalResponse;
     }
 
+    private DataCarrier receiveFiles(DataCarrier<LinkedList<String>> request){ //todo: might have to pause thread
+        boolean success = true;
+        DataCarrier cancelRequest = new DataCarrier(DC.CANCEL_OPERATION,true);
+        DataCarrier<LinkedList<FileContent>> finalResponse = new DataCarrier<>(DC.GENERAL_ERROR, null, false);
+        DataCarrier initialResponse = sendRequest(request, true);
+
+        if(!MyRemoteItemManager.responseCheck(initialResponse)){
+            Main.outputVerbose("Error in Server Handler receiveFiles, response check returned false");
+            sendRequest(cancelRequest, false);
+            finalResponse.setInfo(DC.REMOTE_SERVER_ERROR);
+            return finalResponse;
+        }
+
+        if(!initialResponse.getInfo().equals(DC.GET_ITEMS)){
+            Main.outputVerbose("Error in Server Handler receiveFiles, remote server did not send correct response");
+            return finalResponse;
+        }else if ( !( (initialResponse.getData() instanceof LinkedList) && ((LinkedList) initialResponse.getData()).get(0) instanceof FileContent ) ){
+            Main.outputVerbose("Error in Server Handler receiveFiles, remote server did not send correct data");
+            return finalResponse;
+        }
+
+        Main.outputVerbose("Remote server ready to send files");
+
+
+        LinkedList<FileContent> files = (LinkedList<FileContent>) initialResponse.getData();
+        for(FileContent fileContent : files){
+            Main.outputVerbose("Attempting to receive "+fileContent.getFileName());
+            DataCarrier<FileContent> receiveFile = new DataCarrier<>(DC.GET_ITEMS, fileContent, false);
+            success = server.receiveFile(receiveFile) && success;
+        }
+
+        finalResponse.setInfo(success? DC.NO_ERROR : DC.GENERAL_ERROR);
+        finalResponse.setData(files);
+
+        return finalResponse;
+    }
+
 
     private DataCarrier waitForResponse() {
         while(!unreadResponse.get()){
@@ -164,9 +200,9 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
 
     @Override
     public DataCarrier getItems(LinkedList<String> fileNames) { //todo: change functionality to match Sever receive files
-        DataCarrier<LinkedList> request = new DataCarrier<>(DC.GET_ITEMS, fileNames, true);
+        DataCarrier<LinkedList<String>> request = new DataCarrier<>(DC.GET_ITEMS, fileNames, true);
 
-        return sendRequest(request, true);
+        return receiveFiles(request);
     }
 
     @Override

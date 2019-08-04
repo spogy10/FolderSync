@@ -1,6 +1,5 @@
 package manager;
 
-import library.sharedpackage.communication.DC;
 import library.sharedpackage.communication.DataCarrier;
 import library.sharedpackage.manager.RemoteItemManager;
 import main.Main;
@@ -81,7 +80,7 @@ public class MyRemoteItemManager implements RemoteItemManager {
         DataCarrier carrier = requestSenderInterface.getItems((LinkedList<String>) fileNames);
         if(responseCheck(carrier)){
             Main.outputVerbose("Remote get items succeeded");
-            return (LinkedList<FileContent>) carrier.getData();
+            return (List<FileContent>) carrier.getData();
         }
         Main.outputVerbose("Remote get items failed");
         return new LinkedList<>();
