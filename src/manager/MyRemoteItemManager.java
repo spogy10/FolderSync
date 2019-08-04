@@ -45,9 +45,9 @@ public class MyRemoteItemManager implements RemoteItemManager {
     @Override
     public boolean addItems(List<FileContent> files) {
         DataCarrier carrier = requestSenderInterface.addItems((LinkedList<FileContent>) files);
-        if(responseCheck(carrier)){
+        if(responseCheck(carrier) && (boolean) carrier.getData()){
             Main.outputVerbose("Remote add items succeeded");
-            return (boolean) carrier.getData();
+            return true;
         }
         Main.outputVerbose("Remote add items failed");
         return false;
@@ -56,9 +56,9 @@ public class MyRemoteItemManager implements RemoteItemManager {
     @Override
     public boolean removeItems(List<String> fileNames) {
         DataCarrier carrier = requestSenderInterface.removeItems((LinkedList<String>) fileNames);
-        if(responseCheck(carrier)){
+        if(responseCheck(carrier) && (boolean) carrier.getData()){
             Main.outputVerbose("Remote remove items succeeded");
-            return (boolean) carrier.getData();
+            return true;
         }
         Main.outputVerbose("Remote remove items failed");
         return false;
