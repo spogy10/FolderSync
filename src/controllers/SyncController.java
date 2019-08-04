@@ -63,11 +63,9 @@ public class SyncController implements Initializable, SyncControllerInterface {
     }
 
     private static void test() throws MyFileManagerNotInitializedException { //todo: remove
-        //todo: current problem, remote does not immediatly end send file connection
+        //todo: current problem, remote does not immediately end send file connection
         List<String> fileNames = new LinkedList<>(Arrays.asList(new String[]{"testFile.mp4"}));
         List<FileContent> files = MyFileManager.getInstance().getItems(fileNames);
-
-        //files.get(0).setFileName("testFile.mp4");
 
         for(FileContent file : files){
             Main.outputVerbose(file.toString());
