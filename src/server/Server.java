@@ -238,9 +238,9 @@ public class Server implements Runnable {
         }
         if(success){
             if(dc.isRequest())
-                notifyRequestSent(dc.getInfo().toString());
+                notifyRequestReceived(dc.getInfo().toString());
             else
-                notifyResponseSent(dc.getInfo().toString());
+                notifyRequestReceived(dc.getInfo().toString());
             return true;
         }else{
             if(dc.isRequest())

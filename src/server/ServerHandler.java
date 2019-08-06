@@ -99,10 +99,10 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         if(server.isServerOff() || !server.areStreamsInitialized()){
             String header = request.isRequest()? "Request:" : "Response:";
             Main.outputVerbose(header + " " + request.getInfo() + " failed to send because connection not setup");
-            return new DataCarrier(DC.CONNECTION_NOT_SETUP, false);
+            return new DataCarrier(false, DC.CONNECTION_NOT_SETUP);
         }
 
-        DataCarrier response = new DataCarrier(DC.SERVER_CONNECTION_ERROR, false);
+        DataCarrier response = new DataCarrier(false, DC.SERVER_CONNECTION_ERROR);
         try{
             server.sendObject(request);
 
@@ -129,8 +129,8 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
 
     private DataCarrier sendFiles(DataCarrier<LinkedList<FileContent>> request) {
         boolean success = true;
-        DataCarrier cancelRequest = new DataCarrier(DC.CANCEL_OPERATION,true);
-        DataCarrier<Boolean> finalResponse = new DataCarrier<>(DC.GENERAL_ERROR, false, false);
+        DataCarrier cancelRequest = new DataCarrier(true, DC.CANCEL_OPERATION);
+        DataCarrier<Boolean> finalResponse = new DataCarrier<>(false, DC.GENERAL_ERROR, false);
         DataCarrier initialResponse = sendRequest(request, true);
 
         if(!MyRemoteItemManager.responseCheck(initialResponse)){
@@ -152,7 +152,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         List<FileContent> files = request.getData();
         for(FileContent fileContent : files){
             Main.outputVerbose("Attempting to send "+fileContent.getFileName());
-            DataCarrier<FileContent> sendFile = new DataCarrier<>(DC.ADD_ITEMS, fileContent, true);
+            DataCarrier<FileContent> sendFile = new DataCarrier<>(true, DC.ADD_ITEMS, fileContent);
             boolean currentSuccess = server.sendFile(sendFile);
             Main.outputVerbose("Sending "+fileContent.getFileName()+": "+currentSuccess);
 
@@ -165,13 +165,15 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         finalResponse.setData(success);
 
         pauseThread.compareAndSet(true, false);
+        //DataCarrier finishedResponse = new DataCarrier()
+
         return finalResponse;
     }
 
     private DataCarrier receiveFiles(DataCarrier<LinkedList<String>> request){ //todo: might have to pause thread
         boolean success = true;
-        DataCarrier cancelRequest = new DataCarrier(DC.CANCEL_OPERATION,true);
-        DataCarrier<LinkedList<FileContent>> finalResponse = new DataCarrier<>(DC.GENERAL_ERROR, null, false);
+        DataCarrier cancelRequest = new DataCarrier(true, DC.CANCEL_OPERATION);
+        DataCarrier<LinkedList<FileContent>> finalResponse = new DataCarrier<>(false, DC.GENERAL_ERROR, null);
         DataCarrier initialResponse = sendRequest(request, true);
 
         if(!MyRemoteItemManager.responseCheck(initialResponse)){
@@ -198,7 +200,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         LinkedList<FileContent> files = (LinkedList<FileContent>) initialResponse.getData();
         for(FileContent fileContent : files){
             Main.outputVerbose("Attempting to receive "+fileContent.getFileName());
-            DataCarrier<FileContent> receiveFile = new DataCarrier<>(DC.GET_ITEMS, fileContent, false);
+            DataCarrier<FileContent> receiveFile = new DataCarrier<>(false, DC.GET_ITEMS, fileContent);
             boolean currentSuccess = server.receiveFile(receiveFile);
             Main.outputVerbose("Receiving "+fileContent.getFileName()+": "+currentSuccess);
 
@@ -217,28 +219,28 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
 
     @Override
     public DataCarrier getItemsList(){
-        DataCarrier<LinkedList> request = new DataCarrier<>(DC.GET_ITEM_LIST, true);
+        DataCarrier<LinkedList> request = new DataCarrier<>(true, DC.GET_ITEM_LIST);
 
         return sendRequest(request, true);
     }
 
     @Override
     public DataCarrier getItems(LinkedList<String> fileNames) {
-        DataCarrier<LinkedList<String>> request = new DataCarrier<>(DC.GET_ITEMS, fileNames, true);
+        DataCarrier<LinkedList<String>> request = new DataCarrier<>(true, DC.GET_ITEMS, fileNames);
 
         return receiveFiles(request);
     }
 
     @Override
     public DataCarrier addItems(LinkedList<FileContent> files) {
-        DataCarrier<LinkedList<FileContent>> request = new DataCarrier<>(DC.ADD_ITEMS, files, true);
+        DataCarrier<LinkedList<FileContent>> request = new DataCarrier<>(true, DC.ADD_ITEMS, files);
 
         return sendFiles(request);
     }
 
     @Override
     public DataCarrier removeItems(LinkedList<String> fileNames) {
-        DataCarrier<LinkedList> request = new DataCarrier<>(DC.REMOVE_ITEMS, fileNames,true);
+        DataCarrier<LinkedList> request = new DataCarrier<>(true, DC.REMOVE_ITEMS, fileNames);
 
         return sendRequest(request, true);
     }
