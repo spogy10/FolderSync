@@ -34,6 +34,8 @@ public class Main extends Application {
 
     //todo set up methods to get and pass file data - change to better method
 
+    //todo: start over server once connection reset
+
     private static void onStartUp(){
         Settings settings = Settings.getInstance();
         MyFileManager.getInstance(settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION));

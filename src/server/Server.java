@@ -263,14 +263,21 @@ public class Server implements Runnable {
     
     private void closeConnection(){
         try {
-            os.close();
-            is.close();
-            connection.close();
+            if(os != null)
+                os.close();
+            if(is != null)
+                is.close();
+            if(connection != null)
+                connection.close();
             Main.outputVerbose("Server connections closed");
         } catch (IOException e) {
             e.printStackTrace();
             Main.outputError("Error closing connections", e);
         }
+
+        os = null;
+        is = null;
+        connection = null;
     }
     
     boolean areStreamsInitialized(){

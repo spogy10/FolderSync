@@ -81,6 +81,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
             Main.outputError("Error occurred in ServerHandler run method", e);
         } finally {
             server.endServer();
+            server.restartServer();
         }
     }
 
