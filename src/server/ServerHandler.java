@@ -165,12 +165,13 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         finalResponse.setData(success);
 
         pauseThread.compareAndSet(true, false);
-        //DataCarrier finishedResponse = new DataCarrier()
+        DataCarrier finishedResponse = new DataCarrier(true, DC.FINISHED_SENDING_FILES);
+        sendRequest(finishedResponse, false);
 
         return finalResponse;
     }
 
-    private DataCarrier receiveFiles(DataCarrier<LinkedList<String>> request){ //todo: might have to pause thread
+    private DataCarrier receiveFiles(DataCarrier<LinkedList<String>> request){
         boolean success = true;
         DataCarrier cancelRequest = new DataCarrier(true, DC.CANCEL_OPERATION);
         DataCarrier<LinkedList<FileContent>> finalResponse = new DataCarrier<>(false, DC.GENERAL_ERROR, null);
