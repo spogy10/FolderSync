@@ -33,7 +33,6 @@ public class SyncService extends Service<Void> {
         remoteManager.addItems(filesToBeAddedToMobile);
 
         Status.addToStatus(filesToBeAdded(statMap));
-
     }
     
     @Override
