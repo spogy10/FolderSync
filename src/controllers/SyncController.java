@@ -63,19 +63,9 @@ public class SyncController implements Initializable, SyncControllerInterface {
     }
 
     private void test() throws MyFileManagerNotInitializedException { //todo: remove
-        //todo: current problem, remote does not immediately end send file connection
         if(lvB.getItems().isEmpty()){
-            List<String> fileNames = new LinkedList<>(Arrays.asList(new String[]{"testFile-5.mp4", "testFile-7.mp4", "testFile-14.mp4"}));
-            List<FileContent> files = MyFileManager.getInstance().getItems(fileNames);
-
-            for(FileContent file : files){
-                Main.outputVerbose(file.toString());
-            }
-
-            Thread t = new Thread(() -> {
-                Main.getRemoteItemManager().addItems(files);
-            });
-            t.start();
+            //sendFilesTest(new String[]{"testFile-5.mp4", "testFile-7.mp4", "testFile-14.mp4"});
+            //receiveFilesTest(new String[]{"testFile-5.mp4", "testFile-7.mp4", "testFile-14.mp4"});
         }else{
             LinkedList<String> removeFiles = new LinkedList<>();
             removeFiles.add(lvA.getSelectionModel().getSelectedItem());
@@ -88,6 +78,30 @@ public class SyncController implements Initializable, SyncControllerInterface {
             t.start();
         }
 
+    }
+
+    private void receiveFilesTest(String[] fileNamesArray){
+        List<String> fileNames = new LinkedList<>(Arrays.asList(fileNamesArray));
+
+
+        Thread t = new Thread(() -> {
+            Main.getRemoteItemManager().getItems(fileNames);
+        });
+        t.start();
+    }
+
+    private void sendFilesTest(String[] fileNamesArray) throws MyFileManagerNotInitializedException {
+        List<String> fileNames = new LinkedList<>(Arrays.asList(fileNamesArray));
+        List<FileContent> files = MyFileManager.getInstance().getItems(fileNames);
+
+        for(FileContent file : files){
+            Main.outputVerbose(file.toString());
+        }
+
+        Thread t = new Thread(() -> {
+            Main.getRemoteItemManager().addItems(files);
+        });
+        t.start();
     }
 
     @FXML

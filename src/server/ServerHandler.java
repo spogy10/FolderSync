@@ -91,6 +91,9 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
                 Main.sync();
                 break;
 
+            case FINISHED_SENDING_FILES:
+                break;
+
             default:
         }
     }
