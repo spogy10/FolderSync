@@ -8,6 +8,7 @@ import library.sharedpackage.models.FileContent;
 import main.Main;
 import library.sharedpackage.manager.ItemManager;
 import manager.MyFileManager;
+import manager.MyRemoteItemManager;
 import manager.MySyncManager;
 import manager.SyncManager;
 import models.Changes;
@@ -23,16 +24,25 @@ public class SyncService extends Service<Void> {
     private RemoteItemManager remoteManager;
 
     private void handleChanges(Map<String, Boolean> pcMap, Map<String, Boolean> mobileMap, Map<String, Boolean> statMap) throws StatusNotIntializedException { //todo: check for correct order of operations, check for empty lists
-        fileManager.removeItems(filesToBeRemoved(pcMap));
-        remoteManager.removeItems(filesToBeRemoved(mobileMap));
-        Status.removeFromStatus(filesToBeRemoved(statMap));
 
-        remoteManager.getItems(filesToBeAdded(pcMap));
-        List<FileContent> filesToBeAddedToMobile = fileManager.getItems(filesToBeAdded(mobileMap));
+        update("Removing files from primary folder");
+        removeItems(filesToBeRemoved(pcMap), fileManager);
 
-        remoteManager.addItems(filesToBeAddedToMobile);
+        update("Removing files from remote folder");
+        removeItems(filesToBeRemoved(mobileMap), remoteManager);
 
-        Status.addToStatus(filesToBeAdded(statMap));
+        update("Removing files from Status keeper");
+        removeItems(filesToBeRemoved(statMap), new Status());
+
+
+        update("Adding files to primary folder");
+        addItems(filesToBeAdded(pcMap), fileManager);
+
+        update("Adding files to remote folder");
+        addItems(filesToBeAdded(mobileMap), remoteManager);
+
+        update("Adding files from Status keeper");
+        addItems(filesToBeAdded(statMap), new Status());
     }
     
     @Override
@@ -41,15 +51,56 @@ public class SyncService extends Service<Void> {
             fileManager = MyFileManager.getInstance();
             remoteManager = Main.getRemoteItemManager();
             SyncManager syncManager = MySyncManager.getInstance();
-            
+
+            if(!remoteManager.isRequestSenderSetup()){
+                update("Connection not setup, cannot sync files");
+                return null;
+            }
+
+            update("Syncing files");
             Changes changes = syncManager.sync(fileManager.getItemsList(), remoteManager.getItemsList(), Status.getStatusList());
+
             handleChanges(changes.getPc(), changes.getMobile(), changes.getStat());
 
+            update("Sync Complete");
         }catch(Exception e){
             e.printStackTrace();
             Main.outputError("Error syncing", e);
+            update("An error occurred during sync operation");
         }
         return null;
+    }
+
+    private void update(String updateMessage){ //todo: turn into ui
+        Main.outputVerbose(updateMessage);
+    }
+
+
+    private void removeItems(List<String> fileList, ItemManager itemManager) throws StatusNotIntializedException {
+        if(!fileList.isEmpty()){
+
+            if(itemManager instanceof Status)
+                Status.removeFromStatus(fileList);
+            else
+                itemManager.removeItems(fileList);
+        }
+
+    }
+
+    private void addItems(List<String> fileList, ItemManager itemManager) throws StatusNotIntializedException {
+        if(!fileList.isEmpty()){
+
+            if(itemManager instanceof Status)
+                Status.addToStatus(fileList);
+            else if(itemManager instanceof MyFileManager){
+                remoteManager.getItems(fileList);
+            } else if(itemManager instanceof MyRemoteItemManager){
+                List<FileContent> filesToBeAddedToMobile = fileManager.getItems(fileList);
+                remoteManager.addItems(filesToBeAddedToMobile);
+            }
+
+        }
+
     }
 
 
