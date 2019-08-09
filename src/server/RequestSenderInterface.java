@@ -14,4 +14,6 @@ public interface RequestSenderInterface {
     DataCarrier getItemsList();
 
     DataCarrier getItems(LinkedList<String> fileNames);
+
+    DataCarrier testConnection();
 }

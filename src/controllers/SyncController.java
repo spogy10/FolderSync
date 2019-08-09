@@ -66,6 +66,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
         if(lvB.getItems().isEmpty()){
             //sendFilesTest(new String[]{"testFile-5.mp4", "testFile-7.mp4", "testFile-14.mp4"});
             //receiveFilesTest(new String[]{"testFile-5.mp4", "testFile-7.mp4", "testFile-14.mp4"});
+            testTestConnection();
         }else{
             LinkedList<String> removeFiles = new LinkedList<>();
             removeFiles.add(lvA.getSelectionModel().getSelectedItem());
@@ -78,6 +79,10 @@ public class SyncController implements Initializable, SyncControllerInterface {
             t.start();
         }
 
+    }
+
+    private void testTestConnection(){
+        Main.getRemoteItemManager().isRequestSenderSetup();
     }
 
     private void receiveFilesTest(String[] fileNamesArray){

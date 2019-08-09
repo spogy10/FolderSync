@@ -94,6 +94,9 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
             case FINISHED_SENDING_FILES:
                 break;
 
+            case CONNECTION_SETUP:
+                connectionSetup(carrier);
+
             default:
         }
     }
@@ -245,6 +248,19 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
     @Override
     public DataCarrier removeItems(LinkedList<String> fileNames) {
         DataCarrier<LinkedList> request = new DataCarrier<>(true, DC.REMOVE_ITEMS, fileNames);
+
+        return sendRequest(request, true);
+    }
+
+    private void connectionSetup(DataCarrier carrier) {
+        DataCarrier<Boolean> response = new DataCarrier<>(false, DC.CONNECTION_SETUP, true);
+
+        sendRequest(response, false);
+    }
+
+    @Override
+    public DataCarrier testConnection() {
+        DataCarrier request = new DataCarrier(true, DC.CONNECTION_SETUP);
 
         return sendRequest(request, true);
     }

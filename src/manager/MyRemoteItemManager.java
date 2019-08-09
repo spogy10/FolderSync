@@ -54,6 +54,27 @@ public class MyRemoteItemManager implements RemoteItemManager {
     }
 
     @Override
+    public boolean isRequestSenderSetup() {
+        if(requestSenderInterface == null)
+            return false;
+
+        DataCarrier carrier = requestSenderInterface.testConnection();
+        if(!responseCheck(carrier)){
+            Main.outputVerbose("Connection not setup");
+            return false;
+        }
+
+        if(!( (boolean) carrier.getData() )){
+            Main.outputVerbose("Connection Setup result returned false");
+            return false;
+        }
+
+        Main.outputVerbose("Connection setup");
+
+        return true;
+    }
+
+    @Override
     public boolean removeItems(List<String> fileNames) {
         DataCarrier carrier = requestSenderInterface.removeItems((LinkedList<String>) fileNames);
         if(responseCheck(carrier) && (boolean) carrier.getData()){
