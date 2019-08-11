@@ -54,31 +54,21 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
     @FXML
     public void btnSyncOnClick() {
-        try {
-            test();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Main.outputError("Error with test", e);
-        }
+//        try {
+//            test();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Main.outputError("Error with test", e);
+//        }
     }
 
     private void test() throws MyFileManagerNotInitializedException { //todo: remove
-        if(lvB.getItems().isEmpty()){
-            //sendFilesTest(new String[]{"testFile-5.mp4", "testFile-7.mp4", "testFile-14.mp4"});
-            //receiveFilesTest(new String[]{"testFile-5.mp4", "testFile-7.mp4", "testFile-14.mp4"});
-            testTestConnection();
-        }else{
-            LinkedList<String> removeFiles = new LinkedList<>();
-            removeFiles.add(lvA.getSelectionModel().getSelectedItem());
-            for(String fileName : removeFiles){
-                Main.outputVerbose("File to be removed: "+fileName);
-            }
-            Thread t = new Thread(() -> {
-                Main.getRemoteItemManager().removeItems(removeFiles);
-            });
-            t.start();
-        }
 
+        testSync();
+    }
+
+    private void testSync(){
+        Main.sync();
     }
 
     private void testTestConnection(){
@@ -142,6 +132,15 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
     @FXML
     public void btnClearStatusListOnClick() {
+//        LinkedList<String> removeFiles = new LinkedList<>();
+//        removeFiles.add(lvA.getSelectionModel().getSelectedItem());
+//        for(String fileName : removeFiles){
+//            Main.outputVerbose("File to be removed: "+fileName);
+//        }
+//        Thread t = new Thread(() -> {
+//            Main.getRemoteItemManager().removeItems(removeFiles);
+//        });
+//        t.start();
     }
 
     @FXML

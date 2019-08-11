@@ -104,7 +104,7 @@ public class Main extends Application {
         });
     }
 
-    public static void sync(){ //todo: include sync loading ui, finish this
+    public static void sync(){ //todo: include sync loading ui
         SyncService syncService = new SyncService();
         syncService.restart();
     }

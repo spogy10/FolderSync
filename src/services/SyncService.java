@@ -47,28 +47,33 @@ public class SyncService extends Service<Void> {
     
     @Override
     protected Task<Void> createTask() {
-        try{
-            fileManager = MyFileManager.getInstance();
-            remoteManager = Main.getRemoteItemManager();
-            SyncManager syncManager = MySyncManager.getInstance();
+        return new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                try{
+                    fileManager = MyFileManager.getInstance();
+                    remoteManager = Main.getRemoteItemManager();
+                    SyncManager syncManager = MySyncManager.getInstance();
 
-            if(!remoteManager.isRequestSenderSetup()){
-                update("Connection not setup, cannot sync files");
+                    if(!remoteManager.isRequestSenderSetup()){
+                        update("Connection not setup, cannot sync files");
+                        return null;
+                    }
+
+                    update("Syncing files");
+                    Changes changes = syncManager.sync(fileManager.getItemsList(), remoteManager.getItemsList(), Status.getStatusList());
+
+                    handleChanges(changes.getPc(), changes.getMobile(), changes.getStat());
+
+                    update("Sync Complete");
+                }catch(Exception e){
+                    e.printStackTrace();
+                    Main.outputError("Error syncing", e);
+                    update("An error occurred during sync operation");
+                }
                 return null;
             }
-
-            update("Syncing files");
-            Changes changes = syncManager.sync(fileManager.getItemsList(), remoteManager.getItemsList(), Status.getStatusList());
-
-            handleChanges(changes.getPc(), changes.getMobile(), changes.getStat());
-
-            update("Sync Complete");
-        }catch(Exception e){
-            e.printStackTrace();
-            Main.outputError("Error syncing", e);
-            update("An error occurred during sync operation");
-        }
-        return null;
+        };
     }
 
     private void update(String updateMessage){ //todo: turn into ui
@@ -87,7 +92,7 @@ public class SyncService extends Service<Void> {
 
     }
 
-    private void addItems(List<String> fileList, ItemManager itemManager) throws StatusNotIntializedException {
+    private void addItems(List<String> fileList, ItemManager itemManager) {
         if(!fileList.isEmpty()){
 
             if(itemManager instanceof Status)
