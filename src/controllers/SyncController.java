@@ -54,12 +54,12 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
     @FXML
     public void btnSyncOnClick() {
-//        try {
-//            test();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Main.outputError("Error with test", e);
-//        }
+        try {
+            test();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Main.outputError("Error with test", e);
+        }
     }
 
     private void test() throws MyFileManagerNotInitializedException { //todo: remove
@@ -132,15 +132,14 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
     @FXML
     public void btnClearStatusListOnClick() {
-//        LinkedList<String> removeFiles = new LinkedList<>();
-//        removeFiles.add(lvA.getSelectionModel().getSelectedItem());
-//        for(String fileName : removeFiles){
-//            Main.outputVerbose("File to be removed: "+fileName);
-//        }
-//        Thread t = new Thread(() -> {
-//            Main.getRemoteItemManager().removeItems(removeFiles);
-//        });
-//        t.start();
+        LinkedList<String> removeFiles = new LinkedList<>();
+        removeFiles.add(lvA.getSelectionModel().getSelectedItem());
+        for(String fileName : removeFiles){
+            Main.outputVerbose("File to be removed: "+fileName);
+        }
+        new Thread(() -> {
+            Main.getRemoteItemManager().removeItems(removeFiles);
+        }).start();
     }
 
     @FXML
