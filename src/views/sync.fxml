@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="968.0" style="-fx-background-color: #708d8f;" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.SyncController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="968.0" stylesheets="@../css/default.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.SyncController">
    <children>
       <StackPane alignment="TOP_LEFT" prefHeight="44.0" prefWidth="67.0">
          <children>
@@ -57,7 +57,7 @@
                </children>
             </VBox>
          </children></HBox>
-      <VBox alignment="CENTER" layoutY="367.0" prefHeight="224.0" prefWidth="968.0" style="-fx-background-color: #708d8f;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <VBox alignment="CENTER" layoutY="367.0" prefHeight="224.0" prefWidth="968.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <Separator opacity="0.0" prefHeight="30.0" prefWidth="968.0" VBox.vgrow="ALWAYS" />
             <Button fx:id="btnRefreshList" mnemonicParsing="false" onAction="#btnRefreshListOnClick" prefHeight="42.0" prefWidth="677.0" text="Refresh Lists" VBox.vgrow="ALWAYS">

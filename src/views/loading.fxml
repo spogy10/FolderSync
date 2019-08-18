@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controllers.LoadingController"
-            prefHeight="400.0" prefWidth="600.0">
 
-</AnchorPane>
+<VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="20.0" stylesheets="@../css/default.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="/controllers/LoadingController">
+   <children>
+      <TextField fx:id="tfMain" alignment="CENTER" prefHeight="75.0" prefWidth="442.0" text="dfnfasfdsafasd" />
+      <Separator opacity="0.0" prefHeight="53.0" prefWidth="200.0" />
+      <ProgressBar fx:id="pbMain" prefHeight="18.0" prefWidth="467.0" progress="0.0" />
+      <TextField fx:id="tfSub" alignment="CENTER" prefHeight="26.0" prefWidth="344.0" />
+      <ProgressBar fx:id="pbSub" prefWidth="467.0" progress="0.0" />
+   </children>
+</VBox>
