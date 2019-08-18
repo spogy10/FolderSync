@@ -1,7 +1,6 @@
 package controllers;
 
 import JavaFXHelper.FXHelper;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.fxml.FXML;

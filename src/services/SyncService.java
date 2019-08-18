@@ -1,6 +1,12 @@
 package services;
 
+import controllers.LoadingController;
 import exceptions.StatusNotIntializedException;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import library.sharedpackage.manager.RemoteItemManager;
@@ -14,34 +20,54 @@ import manager.SyncManager;
 import models.Changes;
 import models.Status;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class SyncService extends Service<Void> {
 
+    private final double TOTAL = 8;
+
     private ItemManager fileManager;
     private RemoteItemManager remoteManager;
 
+    private StringProperty updateProperty;
+    private DoubleProperty progressProperty;
+
+    public SyncService(){
+        updateProperty = new SimpleStringProperty("Starting Sync Service");
+        progressProperty = new SimpleDoubleProperty(0/TOTAL);
+
+        try {
+            LoadingController.bindMainStringProperty(this, updateProperty);
+            LoadingController.bindMainDoubleProperty(this, progressProperty);
+            Main.outputVerbose("Binding properties in SyncService constructor");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Main.outputError("Error binding properties in SyncService constructor", e);
+        }
+    }
+
     private void handleChanges(Map<String, Boolean> pcMap, Map<String, Boolean> mobileMap, Map<String, Boolean> statMap) throws StatusNotIntializedException { //todo: check for correct order of operations, check for empty lists
 
-        update("Removing files from primary folder");
+        update("Removing files from primary folder",2);
         removeItems(filesToBeRemoved(pcMap), fileManager);
 
-        update("Removing files from remote folder");
+        update("Removing files from remote folder",3);
         removeItems(filesToBeRemoved(mobileMap), remoteManager);
 
-        update("Removing files from Status keeper");
+        update("Removing files from Status keeper",4);
         removeItems(filesToBeRemoved(statMap), new Status());
 
 
-        update("Adding files to primary folder");
+        update("Adding files to primary folder",5);
         addItems(filesToBeAdded(pcMap), fileManager);
 
-        update("Adding files to remote folder");
+        update("Adding files to remote folder",6);
         addItems(filesToBeAdded(mobileMap), remoteManager);
 
-        update("Adding files from Status keeper");
+        update("Adding files from Status keeper",7);
         addItems(filesToBeAdded(statMap), new Status());
     }
     
@@ -60,12 +86,12 @@ public class SyncService extends Service<Void> {
                         return null;
                     }
 
-                    update("Syncing files");
+                    update("Syncing files", 1);
                     Changes changes = syncManager.sync(fileManager.getItemsList(), remoteManager.getItemsList(), Status.getStatusList());
 
                     handleChanges(changes.getPc(), changes.getMobile(), changes.getStat());
 
-                    update("Sync Complete");
+                    update("Sync Complete",8);
                 }catch(Exception e){
                     e.printStackTrace();
                     Main.outputError("Error syncing", e);
@@ -76,8 +102,18 @@ public class SyncService extends Service<Void> {
         };
     }
 
-    private void update(String updateMessage){ //todo: turn into ui
+    private void update(String updateMessage){
+        update(updateMessage, 0);
+    }
+
+    private void update(String updateMessage, double progress){ //todo: turn into ui
         Main.outputVerbose(updateMessage);
+
+        Platform.runLater(() -> {
+            updateProperty.setValue(updateMessage);
+            progressProperty.setValue(progress/TOTAL);
+        });
+
     }
 
 

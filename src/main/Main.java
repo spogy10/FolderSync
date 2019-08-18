@@ -32,8 +32,6 @@ public class Main extends Application {
 
     //todo set up folder selection
 
-    //todo set up methods to get and pass file data - change to better method
-
     //todo: start over server once connection reset
 
     private static void onStartUp(){
@@ -150,5 +148,6 @@ public class Main extends Application {
     public static void outputVerbose(String message){
         System.out.println(message);
     }
+
 
 }

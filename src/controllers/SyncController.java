@@ -53,7 +53,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
     }
 
     @FXML
-    public void btnSyncOnClick() {
+    public void btnSyncOnClick() { //todo: remove test
         try {
             test();
         } catch (Exception e) {
@@ -62,9 +62,13 @@ public class SyncController implements Initializable, SyncControllerInterface {
         }
     }
 
-    private void test() throws MyFileManagerNotInitializedException { //todo: remove
+    private void test() throws MyFileManagerNotInitializedException, IOException { //todo: remove
 
         testSync();
+    }
+
+    private void testLoadingController() throws IOException {
+        LoadingController.showMainMessage(this, "sdfjksafnkasdf");
     }
 
     private void testSync(){
