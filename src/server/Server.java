@@ -1,5 +1,9 @@
 package server;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import library.sharedpackage.communication.DataCarrier;
 import library.sharedpackage.models.FileContent;
 import main.Main;
@@ -7,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import utility.Settings;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -192,7 +197,7 @@ public class Server implements Runnable {
         return false;
     }
 
-    boolean receiveFile(DataCarrier<FileContent> dc) {
+    boolean receiveFile(DataCarrier<FileContent> dc, @Nullable SimpleDoubleProperty loadingProperty) { //todo: test this with ui
         boolean success = false;
 
         if(dc.isRequest())
@@ -207,13 +212,10 @@ public class Server implements Runnable {
             File file = new File(folderPath, fileContent.getFileName());
             fos = new FileOutputStream(file);
 
-            int n;
-            long fileSize = fileContent.getFileSize();
-            byte[] buffer = new byte[1024 * 4];
-            while ( (fileSize > 0) && (IOUtils.EOF != (n = is.read(buffer, 0, (int)Math.min(buffer.length, fileSize)))) ) { //checks if fileSize is 0 or if EOF sent
-                fos.write(buffer, 0, n);
-                fileSize -= n;
-            }
+            if(loadingProperty == null)
+                receiveFileStream(fileContent.getFileSize(), fos);
+            else
+                receiveFileStream(fileContent.getFileSize(), fos, loadingProperty);
 
             success = true;
         } catch (FileNotFoundException e) {
@@ -223,6 +225,10 @@ public class Server implements Runnable {
             e.printStackTrace();
             Main.outputError("Error receiving file", e);
         } finally {
+            if(loadingProperty != null){
+                loadingProperty.unbind();
+                loadingProperty.setValue(0);
+            }
             if(fos == null){
                 success = false;
             }else{
@@ -250,6 +256,27 @@ public class Server implements Runnable {
         }
 
         return false;
+    }
+
+    private void receiveFileStream(final long totalFileSize, final FileOutputStream fos) throws IOException {
+        int n;
+        long fileSize = totalFileSize;
+        byte[] buffer = new byte[1024 * 4];
+        while ( (fileSize > 0) && (IOUtils.EOF != (n = is.read(buffer, 0, (int)Math.min(buffer.length, fileSize)))) ) { //checks if fileSize is 0 or if EOF sent
+            fos.write(buffer, 0, n);
+            fileSize -= n;
+        }
+    }
+
+    private void receiveFileStream(final long totalFileSize, final FileOutputStream fos, SimpleDoubleProperty loadingProperty) throws IOException {
+        int n;
+        LongProperty fileSize = new SimpleLongProperty(totalFileSize);
+        loadingProperty.bind((fileSize.divide(totalFileSize)).multiply(-1).add(1));
+        byte[] buffer = new byte[1024 * 4];
+        while ( (fileSize.getValue() > 0) && (IOUtils.EOF != (n = is.read(buffer, 0, (int)Math.min(buffer.length, fileSize.getValue())))) ) { //checks if fileSize is 0 or if EOF sent
+            fos.write(buffer, 0, n);
+            fileSize.subtract(n);
+        }
     }
 
     DataCarrier receiveObject() throws IOException, ClassNotFoundException {

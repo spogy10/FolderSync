@@ -71,6 +71,11 @@ public class LoadingController implements Initializable {
         startLoadingView(obj);
     }
 
+    public static void close(){
+        Main.outputVerbose("close loading view");
+        closeLoadingView();
+    }
+
     private static void closeLoadingView(){
         loadingOn.compareAndSet(true, false);
         if(loadingStage != null)
