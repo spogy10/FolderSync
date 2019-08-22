@@ -13,10 +13,7 @@ import library.sharedpackage.manager.RemoteItemManager;
 import library.sharedpackage.models.FileContent;
 import main.Main;
 import library.sharedpackage.manager.ItemManager;
-import manager.MyFileManager;
-import manager.MyRemoteItemManager;
-import manager.MySyncManager;
-import manager.SyncManager;
+import manager.*;
 import models.Changes;
 import models.Status;
 
@@ -30,18 +27,25 @@ public class SyncService extends Service<Void> {
     private final double TOTAL = 8;
 
     private ItemManager fileManager;
-    private RemoteItemManager remoteManager;
+    private UpdatableRemoteItemManager remoteManager;
 
-    private StringProperty updateProperty;
-    private DoubleProperty progressProperty;
+    private StringProperty updateProperty, subUpdateProperty;
+    private DoubleProperty progressProperty, subProgressProperty;
+
+
 
     public SyncService(){
         updateProperty = new SimpleStringProperty("Starting Sync Service");
         progressProperty = new SimpleDoubleProperty(0/TOTAL);
 
+        subUpdateProperty = new SimpleStringProperty("");
+        subProgressProperty = new SimpleDoubleProperty(0);
+
         try {
             LoadingController.bindMainStringProperty(this, updateProperty);
             LoadingController.bindMainDoubleProperty(this, progressProperty);
+            LoadingController.bindSubStringProperty(this, subUpdateProperty);
+            LoadingController.bindSubDoubleProperty(this, subProgressProperty);
             Main.outputVerbose("Binding properties in SyncService constructor");
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,6 +89,9 @@ public class SyncService extends Service<Void> {
                         update("Connection not setup, cannot sync files");
                         return null;
                     }
+
+                    subUpdateProperty.bind(remoteManager.getUpdateProperty());
+                    subProgressProperty.bind(remoteManager.getProgressProperty());
 
                     update("Syncing files", 1);
                     Changes changes = syncManager.sync(fileManager.getItemsList(), remoteManager.getItemsList(), Status.getStatusList());

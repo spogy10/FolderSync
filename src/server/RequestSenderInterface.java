@@ -1,5 +1,7 @@
 package server;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.StringProperty;
 import library.sharedpackage.communication.DataCarrier;
 import library.sharedpackage.models.FileContent;
 
@@ -16,4 +18,8 @@ public interface RequestSenderInterface {
     DataCarrier getItems(LinkedList<String> fileNames);
 
     DataCarrier testConnection();
+
+    StringProperty getUpdateProperty();
+
+    DoubleProperty getProgressProperty();
 }

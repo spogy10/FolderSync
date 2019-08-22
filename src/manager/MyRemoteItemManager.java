@@ -1,5 +1,7 @@
 package manager;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.StringProperty;
 import library.sharedpackage.communication.DataCarrier;
 import library.sharedpackage.manager.RemoteItemManager;
 import main.Main;
@@ -10,7 +12,7 @@ import server.ServerHandler;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MyRemoteItemManager implements RemoteItemManager {
+public class MyRemoteItemManager implements UpdatableRemoteItemManager {
 
     private RequestSenderInterface requestSenderInterface;
 
@@ -72,6 +74,16 @@ public class MyRemoteItemManager implements RemoteItemManager {
         Main.outputVerbose("Connection setup");
 
         return true;
+    }
+
+    @Override
+    public StringProperty getUpdateProperty() {
+        return requestSenderInterface != null? requestSenderInterface.getUpdateProperty() : null;
+    }
+
+    @Override
+    public DoubleProperty getProgressProperty() {
+        return requestSenderInterface != null? requestSenderInterface.getProgressProperty() : null;
     }
 
     @Override

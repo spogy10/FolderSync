@@ -1,5 +1,10 @@
 package server;
 
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import library.sharedpackage.communication.DC;
 import library.sharedpackage.communication.DataCarrier;
 import main.Main;
@@ -23,6 +28,9 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
     private DataCarrier tempResponseHolder;
     private AtomicBoolean pauseThread = new AtomicBoolean(false);
 
+    private StringProperty updateProperty;
+    private DoubleProperty progressProperty;
+
     private static ServerHandler ourInstance = null;
 
 
@@ -41,6 +49,8 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
 
     private ServerHandler(ItemManager remoteManager){
         this.remoteManager = remoteManager;
+        updateProperty = new SimpleStringProperty("");
+        progressProperty = new SimpleDoubleProperty(0);
         server = Server.getInstance(this);
     }
 
@@ -211,7 +221,9 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         for(FileContent fileContent : files){
             Main.outputVerbose("Attempting to receive "+fileContent.getFileName());
             DataCarrier<FileContent> receiveFile = new DataCarrier<>(false, DC.GET_ITEMS, fileContent);
-            boolean currentSuccess = server.receiveFile(receiveFile);
+            updateProperty("Receiving: "+ fileContent.getFileName());
+            boolean currentSuccess = server.receiveFile(receiveFile, progressProperty);
+            updateProperty("");
             Main.outputVerbose("Receiving "+fileContent.getFileName()+": "+currentSuccess);
 
             success = currentSuccess && success;
@@ -224,6 +236,12 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
 
         pauseThread.compareAndSet(true, false);
         return finalResponse;
+    }
+
+    private void updateProperty(String updateMessage){
+        Platform.runLater(() -> {
+            updateProperty.setValue(updateMessage);
+        });
     }
 
 
@@ -266,5 +284,15 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         DataCarrier request = new DataCarrier(true, DC.CONNECTION_SETUP);
 
         return sendRequest(request, true);
+    }
+
+    @Override
+    public StringProperty getUpdateProperty() {
+        return updateProperty;
+    }
+
+    @Override
+    public DoubleProperty getProgressProperty() {
+        return progressProperty;
     }
 }

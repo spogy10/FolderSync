@@ -140,6 +140,12 @@ public class Status implements ItemManager {
         status.removeAll(fileNames);
     }
 
+    public static void clearStatusList() throws StatusNotIntializedException {
+        isStatusInitialized();
+
+        status.clear();
+    }
+
 //    @Override
 //    public boolean addItems(List<FileContent> files) {
 //        String errorMessage = "Status not initialized in addToStatus method";

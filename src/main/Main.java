@@ -17,6 +17,7 @@ import library.sharedpackage.manager.RemoteItemManager;
 import library.sharedpackage.models.FileContent;
 import manager.MyFileManager;
 import manager.MyRemoteItemManager;
+import manager.UpdatableRemoteItemManager;
 import models.Status;
 import services.SyncService;
 import utility.Settings;
@@ -25,7 +26,7 @@ import java.io.IOException;
 
 public class Main extends Application {
 
-    private static RemoteItemManager remoteItemManager;
+    private static UpdatableRemoteItemManager remoteItemManager;
     private static SyncControllerInterface syncControllerInterface;
 
     //todo create user interface
@@ -107,12 +108,12 @@ public class Main extends Application {
         syncService.restart();
     }
 
-    public static void setBItemManager(RemoteItemManager manager){
+    public static void setBItemManager(UpdatableRemoteItemManager manager){
         remoteItemManager = manager;
         outputVerbose("bItemManager Set");
     }
 
-    public static RemoteItemManager getRemoteItemManager(){
+    public static UpdatableRemoteItemManager getRemoteItemManager(){
         outputVerbose("Get bItemManager");
         if(remoteItemManager == null){
             remoteItemManager = new MyRemoteItemManager();

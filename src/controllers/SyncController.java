@@ -2,6 +2,7 @@ package controllers;
 
 import JavaFXHelper.FXHelper;
 import exceptions.MyFileManagerNotInitializedException;
+import exceptions.StatusNotIntializedException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -136,14 +137,35 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
     @FXML
     public void btnClearStatusListOnClick() {
-        LinkedList<String> removeFiles = new LinkedList<>();
-        removeFiles.add(lvA.getSelectionModel().getSelectedItem());
-        for(String fileName : removeFiles){
-            Main.outputVerbose("File to be removed: "+fileName);
+//        LinkedList<String> removeFiles = new LinkedList<>();
+//        removeFiles.add(lvA.getSelectionModel().getSelectedItem());
+//        for(String fileName : removeFiles){
+//            Main.outputVerbose("File to be removed: "+fileName);
+//        }
+//        new Thread(() -> {
+//            Main.getRemoteItemManager().removeItems(removeFiles);
+//        }).start();
+
+        LinkedList<String> removeFilesRemote = new LinkedList<>(Arrays.asList("testFile-10.mp4", "testFile-5.mp4"));
+        for(String fileName : removeFilesRemote){
+            Main.outputVerbose("File to be removed from remote: "+fileName);
         }
         new Thread(() -> {
-            Main.getRemoteItemManager().removeItems(removeFiles);
+            Main.getRemoteItemManager().removeItems(removeFilesRemote);
         }).start();
+
+        LinkedList<String> removeFilesPC = new LinkedList<>(Arrays.asList("testFile-17.mp4", "testFile-7.mp4"));
+        for(String fileName : removeFilesPC){
+            Main.outputVerbose("File to be removed from PC: "+fileName);
+        }
+
+        fileManager.removeItems(removeFilesPC);
+
+        try {
+            Status.clearStatusList();
+        } catch (StatusNotIntializedException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

@@ -4,6 +4,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import library.sharedpackage.communication.DataCarrier;
 import library.sharedpackage.models.FileContent;
 import main.Main;
@@ -197,7 +199,7 @@ public class Server implements Runnable {
         return false;
     }
 
-    boolean receiveFile(DataCarrier<FileContent> dc, @Nullable SimpleDoubleProperty loadingProperty) { //todo: test this with ui
+    boolean receiveFile(DataCarrier<FileContent> dc, @Nullable DoubleProperty loadingProperty) { //todo: test this with ui; needs more testing
         boolean success = false;
 
         if(dc.isRequest())
@@ -259,6 +261,7 @@ public class Server implements Runnable {
     }
 
     private void receiveFileStream(final long totalFileSize, final FileOutputStream fos) throws IOException {
+        Main.outputVerbose("In receiveFileStream no updates method");
         int n;
         long fileSize = totalFileSize;
         byte[] buffer = new byte[1024 * 4];
@@ -268,10 +271,14 @@ public class Server implements Runnable {
         }
     }
 
-    private void receiveFileStream(final long totalFileSize, final FileOutputStream fos, SimpleDoubleProperty loadingProperty) throws IOException {
+    private void receiveFileStream(final long totalFileSize, final FileOutputStream fos, DoubleProperty loadingProperty) throws IOException {
+        Main.outputVerbose("In receiveFileStream updates method");
+
         int n;
         LongProperty fileSize = new SimpleLongProperty(totalFileSize);
         loadingProperty.bind((fileSize.divide(totalFileSize)).multiply(-1).add(1));
+        fileSize.addListener((observable, oldValue, newValue) -> Main.outputVerbose("oldValue: "+oldValue + ";  newValue: " + newValue));
+        Main.outputVerbose(String.valueOf(fileSize.longValue()));
         byte[] buffer = new byte[1024 * 4];
         while ( (fileSize.getValue() > 0) && (IOUtils.EOF != (n = is.read(buffer, 0, (int)Math.min(buffer.length, fileSize.getValue())))) ) { //checks if fileSize is 0 or if EOF sent
             fos.write(buffer, 0, n);
