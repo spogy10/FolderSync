@@ -1,5 +1,6 @@
 package server;
 
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -236,7 +237,8 @@ public class Server implements Runnable {
 
     //region FILE TRANSFER
 
-    boolean sendFile(DataCarrier<FileContent> dc){ //todo: create these methods https://stackoverflow.com/questions/10367698/java-multiple-file-transfer-over-socket?answertab=votes#tab-top
+    //region SEND FILES
+    boolean sendFile(DataCarrier<FileContent> dc, @Nullable DoubleProperty loadingProperty){ //todo: create these methods https://stackoverflow.com/questions/10367698/java-multiple-file-transfer-over-socket?answertab=votes#tab-top
         boolean success = false;
 
         if(dc.isRequest())
@@ -289,6 +291,18 @@ public class Server implements Runnable {
 
         return false;
     }
+
+    private void sendFileStream(final long totalFileSize, final FileInputStream fis) throws IOException {
+
+    }
+
+    private void sendFileStream(final long totalFileSize, final FileInputStream fis, DoubleProperty loadingProperty) throws IOException {
+
+    }
+
+    //endregion
+
+    //region RECEIVE FILES
 
     boolean receiveFile(DataCarrier<FileContent> dc, @Nullable DoubleProperty loadingProperty) { //todo: test this with ui; needs more testing
         boolean success = false;
@@ -366,15 +380,24 @@ public class Server implements Runnable {
         Main.outputVerbose("In receiveFileStream updates method");
 
         int n;
-        LongProperty fileSize = new SimpleLongProperty(totalFileSize);
-        loadingProperty.bind((fileSize.divide(totalFileSize)).multiply(-1).add(1));
-        fileSize.addListener((observable, oldValue, newValue) -> Main.outputVerbose("oldValue: "+oldValue + ";  newValue: " + newValue));
-        Main.outputVerbose(String.valueOf(fileSize.longValue()));
+        long fileSize = totalFileSize;
         byte[] buffer = new byte[1024 * 4];
-        while ( (fileSize.getValue() > 0) && (IOUtils.EOF != (n = is.read(buffer, 0, (int)Math.min(buffer.length, fileSize.getValue())))) ) { //checks if fileSize is 0 or if EOF sent
+        while ( (fileSize > 0) && (IOUtils.EOF != (n = is.read(buffer, 0, (int)Math.min(buffer.length, fileSize)))) ) { //checks if fileSize is 0 or if EOF sent
             fos.write(buffer, 0, n);
-            fileSize.subtract(n);
+            fileSize -= n;
+            updateProgressProperty(calculateFilePercentage(totalFileSize, fileSize), loadingProperty);
         }
+    }
+    //endregion
+
+    private double calculateFilePercentage(double totalFileSize, double currentFileSize){
+        return 1 - currentFileSize/totalFileSize;
+    }
+
+    private void updateProgressProperty(double value, DoubleProperty loadingProperty){
+        Platform.runLater(() -> {
+            loadingProperty.setValue(value);
+        });
     }
     //endregion
 

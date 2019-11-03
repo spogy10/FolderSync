@@ -183,7 +183,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         for(FileContent fileContent : files){
             Main.outputVerbose("Attempting to send "+fileContent.getFileName());
             DataCarrier<FileContent> sendFile = new DataCarrier<>(true, DC.ADD_ITEMS, fileContent);
-            boolean currentSuccess = server.sendFile(sendFile);
+            boolean currentSuccess = server.sendFile(sendFile, null);
             Main.outputVerbose("Sending "+fileContent.getFileName()+": "+currentSuccess);
 
             success = currentSuccess && success;
@@ -233,7 +233,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
             Main.outputVerbose("Attempting to receive "+fileContent.getFileName());
             DataCarrier<FileContent> receiveFile = new DataCarrier<>(false, DC.GET_ITEMS, fileContent);
             updateProperty("Receiving: "+ fileContent.getFileName());
-            boolean currentSuccess = server.receiveFile(receiveFile, null/*progressProperty*/);
+            boolean currentSuccess = server.receiveFile(receiveFile, progressProperty);
             updateProperty("");
             Main.outputVerbose("Receiving "+fileContent.getFileName()+": "+currentSuccess);
 
