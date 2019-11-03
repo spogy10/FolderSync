@@ -53,27 +53,77 @@ public class SyncController implements Initializable, SyncControllerInterface {
         Main.setSyncControllerInterface(this);
     }
 
+    //region ONCLICK METHODS
+
     @FXML
-    public void btnSyncOnClick() { //todo: remove test
+    public void btnSyncOnClick() {
+        Main.sync();
+    }
+
+    @FXML
+    public void btnRefreshListOnClick() {
+        refreshLists();
+    }
+
+    @FXML
+    public void btnClearStatusListOnClick() {
         try {
-            test();
-        } catch (Exception e) {
+            Status.clearStatusList();
+        } catch (StatusNotIntializedException e) {
             e.printStackTrace();
-            Main.outputError("Error with test", e);
+            Main.outputError(e);
         }
     }
 
-    private void test() throws MyFileManagerNotInitializedException, IOException { //todo: remove
+    @FXML
+    public void btnBackOnClick() throws IOException {
+        Main.setSyncControllerInterface(null);
+        FXHelper.sceneChanger(this, btnBack, HomeController.FXML, HomeController.TITLE);
+    }
+    //endregion
+
+    //region FUNCTIONALITY
+
+    public void refreshLists(){
+        refreshAList();
+        refreshStatusList();
+        refreshBList();
+    }
+
+    private void refreshStatusList() {
+        lvStatus.getItems().clear();
+        RefreshListService rlService = new RefreshListService(statusManager, lvStatus.getItems());
+        rlService.restart();
+    }
+
+    private void refreshAList() {
+        lvA.getItems().clear();
+        RefreshListService rlService = new RefreshListService(fileManager, lvA.getItems(), piA);
+        piA.setOpacity(1);
+        rlService.restart();
+    }
+
+    private void refreshBList(){
+        lvB.getItems().clear();
+        RefreshListService rlService = new RefreshListService(remoteManager, lvB.getItems(), piB);
+        piB.setOpacity(1);
+        rlService.restart();
+    }
+    //endregion
+
+    //region TEST METHODS
+
+    private void test() throws MyFileManagerNotInitializedException, IOException {
 
         testSync();
     }
 
-    private void testLoadingController() throws IOException {
-        LoadingController.showMainMessage(this, "sdfjksafnkasdf");
-    }
-
     private void testSync(){
         Main.sync();
+    }
+
+    private void testLoadingController() throws IOException {
+        LoadingController.showMainMessage(this, "sdfjksafnkasdf");
     }
 
     private void testTestConnection(){
@@ -104,40 +154,8 @@ public class SyncController implements Initializable, SyncControllerInterface {
         t.start();
     }
 
-    @FXML
-    public void btnRefreshListOnClick() { //todo show loading circles
-        refreshLists();
-    }
-
-    public void refreshLists(){
-        refreshAList();
-        refreshStatusList();
-        refreshBList();
-    }
-
-    private void refreshStatusList() {
-        lvStatus.getItems().clear();
-        RefreshListService rlService = new RefreshListService(statusManager, lvStatus.getItems());
-        rlService.restart();
-    }
-
-    private void refreshAList() {
-        lvA.getItems().clear();
-        RefreshListService rlService = new RefreshListService(fileManager, lvA.getItems(), piA);
-        piA.setOpacity(1);
-        rlService.restart();
-    }
-
-    private void refreshBList(){
-        lvB.getItems().clear();
-        RefreshListService rlService = new RefreshListService(remoteManager, lvB.getItems(), piB);
-        piB.setOpacity(1);
-        rlService.restart();
-    }
-
-    @FXML
-    public void btnClearStatusListOnClick() {
-//        LinkedList<String> removeFiles = new LinkedList<>();
+    private void additionalTestFunctionality(){
+        //        LinkedList<String> removeFiles = new LinkedList<>();
 //        removeFiles.add(lvA.getSelectionModel().getSelectedItem());
 //        for(String fileName : removeFiles){
 //            Main.outputVerbose("File to be removed: "+fileName);
@@ -167,10 +185,6 @@ public class SyncController implements Initializable, SyncControllerInterface {
             e.printStackTrace();
         }
     }
+    //endregion
 
-    @FXML
-    public void btnBackOnClick() throws IOException {
-        Main.setSyncControllerInterface(null);
-        FXHelper.sceneChanger(this, btnBack, HomeController.FXML, HomeController.TITLE);
-    }
 }

@@ -29,8 +29,6 @@ public class Main extends Application {
     private static UpdatableRemoteItemManager remoteItemManager;
     private static SyncControllerInterface syncControllerInterface;
 
-    //todo create user interface
-
     //todo set up folder selection
 
     //todo: start over server once connection reset
@@ -103,7 +101,7 @@ public class Main extends Application {
         });
     }
 
-    public static void sync(){ //todo: include sync loading ui
+    public static void sync(){
         SyncService syncService = new SyncService();
         syncService.restart();
     }

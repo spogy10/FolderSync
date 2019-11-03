@@ -238,7 +238,8 @@ public class Server implements Runnable {
     //region FILE TRANSFER
 
     //region SEND FILES
-    boolean sendFile(DataCarrier<FileContent> dc, @Nullable DoubleProperty loadingProperty){ //todo: create these methods https://stackoverflow.com/questions/10367698/java-multiple-file-transfer-over-socket?answertab=votes#tab-top
+
+    boolean sendFile(DataCarrier<FileContent> dc, @Nullable DoubleProperty loadingProperty){ //https://stackoverflow.com/questions/10367698/java-multiple-file-transfer-over-socket?answertab=votes#tab-top
         boolean success = false;
 
         if(dc.isRequest())
@@ -252,10 +253,12 @@ public class Server implements Runnable {
             String folderPath = settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION);
             File file = new File(folderPath, fileContent.getFileName());
             fis = new FileInputStream(file);
-            if(FileUtils.sizeOf(file) < (FileUtils.ONE_GB * 2))
-                IOUtils.copy(fis, os);
+
+            if(loadingProperty == null)
+                sendFileStream(fileContent.getFileSize(), fis);
             else
-                IOUtils.copyLarge(fis, os);
+                sendFileStream(fileContent.getFileSize(), fis, loadingProperty);
+
             success = true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -293,18 +296,20 @@ public class Server implements Runnable {
     }
 
     private void sendFileStream(final long totalFileSize, final FileInputStream fis) throws IOException {
-
+        Main.outputVerbose("In sendFileStream no updates method");
+        transferStreamData(fis, os, totalFileSize);
     }
 
     private void sendFileStream(final long totalFileSize, final FileInputStream fis, DoubleProperty loadingProperty) throws IOException {
-
+        Main.outputVerbose("In sendFileStream updates method");
+        transferStreamData(fis, os, totalFileSize, loadingProperty);
     }
 
     //endregion
 
     //region RECEIVE FILES
 
-    boolean receiveFile(DataCarrier<FileContent> dc, @Nullable DoubleProperty loadingProperty) { //todo: test this with ui; needs more testing
+    boolean receiveFile(DataCarrier<FileContent> dc, @Nullable DoubleProperty loadingProperty) {
         boolean success = false;
 
         if(dc.isRequest())
@@ -367,28 +372,35 @@ public class Server implements Runnable {
 
     private void receiveFileStream(final long totalFileSize, final FileOutputStream fos) throws IOException {
         Main.outputVerbose("In receiveFileStream no updates method");
-        int n;
-        long fileSize = totalFileSize;
-        byte[] buffer = new byte[1024 * 4];
-        while ( (fileSize > 0) && (IOUtils.EOF != (n = is.read(buffer, 0, (int)Math.min(buffer.length, fileSize)))) ) { //checks if fileSize is 0 or if EOF sent
-            fos.write(buffer, 0, n);
-            fileSize -= n;
-        }
+        transferStreamData(is, fos, totalFileSize);
     }
 
     private void receiveFileStream(final long totalFileSize, final FileOutputStream fos, DoubleProperty loadingProperty) throws IOException {
         Main.outputVerbose("In receiveFileStream updates method");
+        transferStreamData(is, fos, totalFileSize, loadingProperty);
+    }
+    //endregion
 
+    private void transferStreamData(InputStream input, OutputStream outPut, final long totalFileSize) throws IOException {
         int n;
         long fileSize = totalFileSize;
         byte[] buffer = new byte[1024 * 4];
-        while ( (fileSize > 0) && (IOUtils.EOF != (n = is.read(buffer, 0, (int)Math.min(buffer.length, fileSize)))) ) { //checks if fileSize is 0 or if EOF sent
-            fos.write(buffer, 0, n);
+        while ( (fileSize > 0) && (IOUtils.EOF != (n = input.read(buffer, 0, (int)Math.min(buffer.length, fileSize)))) ) { //checks if fileSize is 0 or if EOF sent
+            outPut.write(buffer, 0, n);
+            fileSize -= n;
+        }
+    }
+
+    private void transferStreamData(InputStream input, OutputStream outPut, final long totalFileSize, DoubleProperty loadingProperty) throws IOException {
+        int n;
+        long fileSize = totalFileSize;
+        byte[] buffer = new byte[1024 * 4];
+        while ( (fileSize > 0) && (IOUtils.EOF != (n = input.read(buffer, 0, (int)Math.min(buffer.length, fileSize)))) ) { //checks if fileSize is 0 or if EOF sent
+            outPut.write(buffer, 0, n);
             fileSize -= n;
             updateProgressProperty(calculateFilePercentage(totalFileSize, fileSize), loadingProperty);
         }
     }
-    //endregion
 
     private double calculateFilePercentage(double totalFileSize, double currentFileSize){
         return 1 - currentFileSize/totalFileSize;

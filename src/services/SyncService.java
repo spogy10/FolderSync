@@ -53,7 +53,7 @@ public class SyncService extends Service<Void> {
         }
     }
 
-    private void handleChanges(Map<String, Boolean> pcMap, Map<String, Boolean> mobileMap, Map<String, Boolean> statMap) throws StatusNotIntializedException { //todo: check for correct order of operations, check for empty lists
+    private void handleChanges(Map<String, Boolean> pcMap, Map<String, Boolean> mobileMap, Map<String, Boolean> statMap) throws StatusNotIntializedException {
 
         update("Removing files from primary folder",2);
         removeItems(filesToBeRemoved(pcMap), fileManager);
@@ -115,7 +115,7 @@ public class SyncService extends Service<Void> {
         update(updateMessage, 0);
     }
 
-    private void update(String updateMessage, double progress){ //todo: turn into ui
+    private void update(String updateMessage, double progress){
         Main.outputVerbose(updateMessage);
 
         Platform.runLater(() -> {

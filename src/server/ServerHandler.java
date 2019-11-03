@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ServerHandler implements Runnable, RequestSenderInterface { //todo: create tests for send file methods
+public class ServerHandler implements Runnable, RequestSenderInterface {
     private static final String CONNECTION_RESET_EXCEPTION_STRING = "java.net.SocketException: Connection reset";
     private static final String END_OF_FILE_EXCEPTION_STRING = "java.io.EOFException";
 
@@ -183,7 +183,9 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         for(FileContent fileContent : files){
             Main.outputVerbose("Attempting to send "+fileContent.getFileName());
             DataCarrier<FileContent> sendFile = new DataCarrier<>(true, DC.ADD_ITEMS, fileContent);
-            boolean currentSuccess = server.sendFile(sendFile, null);
+            updateProperty("Sending: "+ fileContent.getFileName());
+            boolean currentSuccess = server.sendFile(sendFile, progressProperty);
+            updateProperty("");
             Main.outputVerbose("Sending "+fileContent.getFileName()+": "+currentSuccess);
 
             success = currentSuccess && success;
