@@ -222,7 +222,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
             Main.outputVerbose("Attempting to receive "+fileContent.getFileName());
             DataCarrier<FileContent> receiveFile = new DataCarrier<>(false, DC.GET_ITEMS, fileContent);
             updateProperty("Receiving: "+ fileContent.getFileName());
-            boolean currentSuccess = server.receiveFile(receiveFile, progressProperty);
+            boolean currentSuccess = server.receiveFile(receiveFile, null/*progressProperty*/);
             updateProperty("");
             Main.outputVerbose("Receiving "+fileContent.getFileName()+": "+currentSuccess);
 

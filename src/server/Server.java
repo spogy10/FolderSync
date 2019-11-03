@@ -15,8 +15,9 @@ import utility.Settings;
 
 import javax.annotation.Nullable;
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.rmi.MarshalledObject;
+import java.util.Iterator;
 
 public class Server implements Runnable {
     private ServerSocket serverSocket = null;
@@ -60,6 +61,7 @@ public class Server implements Runnable {
     }
 
     private void setUpConnection() {
+        outPutIpAddress();
         try{
             int port = Integer.parseInt(settings.getValue(Settings.SettingsKeys.SERVER_PORT_NUMBER));
             int backLog = Integer.parseInt(settings.getValue(Settings.SettingsKeys.SERVER_BACKLOG));
@@ -72,7 +74,29 @@ public class Server implements Runnable {
         }
     }
 
+    private void outPutIpAddress(){
+        try{
+            Iterator<NetworkInterface> iterator = NetworkInterface.getNetworkInterfaces().asIterator();
+            while(iterator.hasNext()){
+                var network = iterator.next();
+                String networkName = "wlan4";
 
+                if(network.getName().equals(networkName)){
+                    Iterator<InetAddress> addressIterator =  network.getInetAddresses().asIterator();
+
+                    InetAddress address = addressIterator.next();
+                    Main.outputVerbose("Address: "+address.getHostAddress());
+                    Main.outputVerbose("Name: "+address.getHostName());
+
+                    break;
+                }
+
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+            Main.outputError(e);
+        }
+    }
 
 
     private void waitForRequests() {

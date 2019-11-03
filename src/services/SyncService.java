@@ -104,6 +104,7 @@ public class SyncService extends Service<Void> {
                     Main.outputError("Error syncing", e);
                     update("An error occurred during sync operation");
                 }
+                Thread.sleep(1000);
                 LoadingController.close();
                 return null;
             }

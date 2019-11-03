@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -78,11 +79,14 @@ public class LoadingController implements Initializable {
 
     private static void closeLoadingView(){
         loadingOn.compareAndSet(true, false);
-        if(loadingStage != null)
-            loadingStage.close();
+        Platform.runLater(() -> {
+            if(loadingStage != null){
+                loadingStage.close();
+            }
 
-        loadingStage = null;
-        resetProperties();
+            loadingStage = null;
+            resetProperties();
+        });
     }
 
     private static void initializeProperties(){
