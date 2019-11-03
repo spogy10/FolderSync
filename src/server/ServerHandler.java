@@ -78,6 +78,8 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
                     }
                 }
             }
+            DataCarrier dc = new DataCarrier(true, DC.DISCONNECT);
+            sendRequest(dc, false);
             Main.outputVerbose("client disconnected from server normally");
         } catch (IOException e) {
             String message = "Error occurred in ServerHandler run method";
@@ -97,6 +99,10 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
             server.restartServer();
         }
     }
+
+
+
+    //region REQUEST RESPONSE UTILITY METHODS
 
     private void caseStatements(DataCarrier carrier) {
         switch (carrier.getInfo()){
@@ -145,6 +151,11 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         unreadResponse.compareAndSet(true, false);
         return tempResponseHolder;
     }
+    //endregion
+
+
+
+    //region FILE TRANSFER
 
     private DataCarrier sendFiles(DataCarrier<LinkedList<FileContent>> request) {
         boolean success = true;
@@ -237,13 +248,32 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
         pauseThread.compareAndSet(true, false);
         return finalResponse;
     }
+    //endregion
+
+
+
+    //region NOTIFICATION SECTION
 
     private void updateProperty(String updateMessage){
+        Main.outputVerbose(updateMessage);
         Platform.runLater(() -> {
             updateProperty.setValue(updateMessage);
         });
     }
 
+    @Override
+    public StringProperty getUpdateProperty() {
+        return updateProperty;
+    }
+
+    @Override
+    public DoubleProperty getProgressProperty() {
+        return progressProperty;
+    }
+    //endregion
+
+
+    //region REQUESTS
 
     @Override
     public DataCarrier getItemsList(){
@@ -285,14 +315,6 @@ public class ServerHandler implements Runnable, RequestSenderInterface { //todo:
 
         return sendRequest(request, true);
     }
+    //endregion
 
-    @Override
-    public StringProperty getUpdateProperty() {
-        return updateProperty;
-    }
-
-    @Override
-    public DoubleProperty getProgressProperty() {
-        return progressProperty;
-    }
 }

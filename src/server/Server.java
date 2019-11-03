@@ -54,11 +54,9 @@ public class Server implements Runnable {
         this.runnable = runnable;
         setUpConnection();
     }
-    
-    
-    boolean isServerOff(){
-       return serverOff;
-    }
+
+
+    //region SERVER MANAGEMENT
 
     private void setUpConnection() {
         outPutIpAddress();
@@ -98,6 +96,76 @@ public class Server implements Runnable {
         }
     }
 
+    private boolean initStreams() {
+        try{
+            if(connection == null)
+                return false;
+
+            os = new ObjectOutputStream(connection.getOutputStream());
+            is = new ObjectInputStream(connection.getInputStream());
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Main.outputError("Error initializing streams", e);
+        }
+
+        return false;
+    }
+
+    private void closeConnection(){
+        try {
+            if(os != null)
+                os.close();
+            if(is != null)
+                is.close();
+            if(connection != null)
+                connection.close();
+            Main.outputVerbose("Server connections closed");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Main.outputError("Error closing connections", e);
+        }
+
+        os = null;
+        is = null;
+        connection = null;
+    }
+
+    boolean areStreamsInitialized(){
+        return connection != null && os != null && is != null;
+    }
+
+    boolean isServerOff(){
+        return serverOff;
+    }
+
+    void restartServer(){
+        Main.outputVerbose("Restarting Server");
+        endServer();
+        setUpConnection();
+    }
+
+    void endServer(){
+        try {
+            closeConnection();
+            serverSocket.close();
+            Main.outputVerbose("Server ended");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Main.outputError("Error ending server", e);
+        }
+
+        serverOff = true;
+    }
+    //endregion
+
+
+    //region THREAD STUFF
+
+    @Override
+    public void run() {
+        waitForRequests();
+    }
 
     private void waitForRequests() {
         Main.outputVerbose("Waiting for requests");
@@ -121,29 +189,10 @@ public class Server implements Runnable {
             Main.outputError("Error starting server", e);
         }
     }
-
-    void restartServer(){
-        Main.outputVerbose("Restarting Server");
-        endServer();
-        setUpConnection();
-    }
+    //endregion
 
 
-    private boolean initStreams() {
-        try{
-            if(connection == null)
-                return false;
-
-            os = new ObjectOutputStream(connection.getOutputStream());
-            is = new ObjectInputStream(connection.getInputStream());
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.outputError("Error initializing streams", e);
-        }
-
-        return false;
-    }
+    //region NOTIFICATION
 
     private void notifyRequestSent(String request) {
         Main.outputVerbose("Request: "+request+" sent");
@@ -160,6 +209,10 @@ public class Server implements Runnable {
     private void notifyResponseReceived(String response){
         Main.outputVerbose("Response "+response+" received");
     }
+    //endregion
+
+
+    //region SEND AND RECIEVE REQUEST AND RESPONSE
 
     void sendObject(DataCarrier dc) throws IOException {
         os.writeObject(dc);
@@ -168,6 +221,20 @@ public class Server implements Runnable {
         else
             notifyResponseSent(dc.getInfo().toString());
     }
+
+    DataCarrier receiveObject() throws IOException, ClassNotFoundException {
+        DataCarrier dc = (DataCarrier) is.readObject();
+        if(dc.isRequest())
+            notifyRequestReceived(dc.getInfo().toString());
+        else
+            notifyResponseReceived(dc.getInfo().toString());
+        return dc;
+    }
+    //endregion
+
+
+
+    //region FILE TRANSFER
 
     boolean sendFile(DataCarrier<FileContent> dc){ //todo: create these methods https://stackoverflow.com/questions/10367698/java-multiple-file-transfer-over-socket?answertab=votes#tab-top
         boolean success = false;
@@ -309,55 +376,9 @@ public class Server implements Runnable {
             fileSize.subtract(n);
         }
     }
-
-    DataCarrier receiveObject() throws IOException, ClassNotFoundException {
-        DataCarrier dc = (DataCarrier) is.readObject();
-        if(dc.isRequest())
-            notifyRequestReceived(dc.getInfo().toString());
-        else
-            notifyResponseReceived(dc.getInfo().toString());
-        return dc;
-    }
-    
-    private void closeConnection(){
-        try {
-            if(os != null)
-                os.close();
-            if(is != null)
-                is.close();
-            if(connection != null)
-                connection.close();
-            Main.outputVerbose("Server connections closed");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.outputError("Error closing connections", e);
-        }
-
-        os = null;
-        is = null;
-        connection = null;
-    }
-    
-    boolean areStreamsInitialized(){
-       return connection != null && os != null && is != null;
-    }
-
-    void endServer(){
-        try {
-            closeConnection();
-            serverSocket.close();
-            Main.outputVerbose("Server ended");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.outputError("Error ending server", e);
-        }
-        
-        serverOff = true;
-    }
+    //endregion
 
 
-    @Override
-    public void run() {
-        waitForRequests();
-    }
+
+
 }
