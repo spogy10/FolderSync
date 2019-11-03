@@ -104,6 +104,16 @@ public class Main extends Application {
     public static void sync(){
         SyncService syncService = new SyncService();
         syncService.restart();
+        refreshList();
+    }
+
+    private static void refreshList(){
+        if(syncControllerInterface != null){
+            syncControllerInterface.refreshLists();
+            Main.outputVerbose("refresh list");
+        }else{
+            Main.outputVerbose("attempted to refresh list but controller instance was null");
+        }
     }
 
     public static void setBItemManager(UpdatableRemoteItemManager manager){

@@ -9,7 +9,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import library.sharedpackage.manager.RemoteItemManager;
 import library.sharedpackage.models.FileContent;
 import main.Main;
 import library.sharedpackage.manager.ItemManager;

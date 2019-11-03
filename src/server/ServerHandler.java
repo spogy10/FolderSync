@@ -180,15 +180,20 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
         Main.outputVerbose("Remote server ready to handle files");
 
         List<FileContent> files = request.getData();
+        int count = 1;
+        int total = files.size();
         for(FileContent fileContent : files){
             Main.outputVerbose("Attempting to send "+fileContent.getFileName());
             DataCarrier<FileContent> sendFile = new DataCarrier<>(true, DC.ADD_ITEMS, fileContent);
-            updateProperty("Sending: "+ fileContent.getFileName());
+            String message = String.format("Sending: %s (%d/%d)", fileContent.getFileName(), count, total);
+            updateProperty(message);
             boolean currentSuccess = server.sendFile(sendFile, progressProperty);
             updateProperty("");
             Main.outputVerbose("Sending "+fileContent.getFileName()+": "+currentSuccess);
 
             success = currentSuccess && success;
+
+            count++;
         }
 
         Main.outputVerbose("Finished sending files: "+success);
@@ -231,15 +236,20 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
 
 
         LinkedList<FileContent> files = (LinkedList<FileContent>) initialResponse.getData();
+        int count = 1;
+        int total = files.size();
         for(FileContent fileContent : files){
             Main.outputVerbose("Attempting to receive "+fileContent.getFileName());
             DataCarrier<FileContent> receiveFile = new DataCarrier<>(false, DC.GET_ITEMS, fileContent);
-            updateProperty("Receiving: "+ fileContent.getFileName());
+            String message = String.format("Receiving: %s (%d/%d)", fileContent.getFileName(), count, total);
+            updateProperty(message);
             boolean currentSuccess = server.receiveFile(receiveFile, progressProperty);
             updateProperty("");
             Main.outputVerbose("Receiving "+fileContent.getFileName()+": "+currentSuccess);
 
             success = currentSuccess && success;
+
+            count++;
         }
 
         Main.outputVerbose("Finished receiving files: "+success);
