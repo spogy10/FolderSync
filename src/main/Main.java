@@ -2,19 +2,20 @@ package main;
 
 import JavaFXHelper.FXHelper;
 import controllers.HomeController;
+import controllers.LoggerController;
 import controllers.SyncControllerInterface;
 import exceptions.SaveStatusException;
 import exceptions.SetupStatusException;
 import exceptions.StatusNotIntializedException;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import library.sharedpackage.manager.RemoteItemManager;
-import library.sharedpackage.models.FileContent;
+import logger.LoggerInterface;
 import manager.MyFileManager;
 import manager.MyRemoteItemManager;
 import manager.UpdatableRemoteItemManager;
@@ -28,12 +29,30 @@ public class Main extends Application {
 
     private static UpdatableRemoteItemManager remoteItemManager;
     private static SyncControllerInterface syncControllerInterface;
+    private static LoggerInterface loggerInterface;
+
+    private static StringBuilder logger;
 
     //todo set up folder selection
 
     //todo: start over server once connection reset
 
+
+    public static void main(String[] args) {
+        onStartUp();
+
+        launch(args);
+
+        onApplicationClose();
+    }
+
+
+
+    //region Application Events
+
     private static void onStartUp(){
+        logger = new StringBuilder("");
+        startLoggerDisplay();
         Settings settings = Settings.getInstance();
         MyFileManager.getInstance(settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION));
         getRemoteItemManager();
@@ -45,6 +64,69 @@ public class Main extends Application {
             outputError("Could not setup status", e);
             System.exit(1);
         }
+    }
+
+    private static void startLoggerDisplay(){
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Stage stage = new Stage();
+
+                    stage.setTitle(LoggerController.TITLE);
+
+                    FXMLLoader loader = new FXMLLoader(Main.class.getResource(LoggerController.FXML));
+                    Parent root = (Parent)loader.load();
+
+                    loggerInterface = (LoggerInterface) loader.getController();
+
+                    Scene scene = new Scene(root);
+
+                    stage.setScene(scene);
+
+                    stage.show();
+
+
+
+                    stage.show();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    outputError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource(HomeController.FXML));
+
+        Scene scene = new Scene(root);
+
+        primaryStage.setScene(scene);
+
+        primaryStage.setTitle(HomeController.TITLE);
+
+        primaryStage.show();
+
+        primaryStage.setOnCloseRequest(new EventHandler<>() {
+            @Override
+            public void handle(WindowEvent event) {
+                event.consume();
+                try {
+                    if(FXHelper.closeProgram(this, primaryStage)){
+                        primaryStage.close();
+                        if(loggerInterface != null)
+                            loggerInterface.closeLoggerDisplay();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     private static void onApplicationClose(){
@@ -67,39 +149,10 @@ public class Main extends Application {
         System.exit(0);
     }
 
-    public static void main(String[] args) {
-        onStartUp();
+    //endregion
 
-        launch(args);
 
-        onApplicationClose();
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource(HomeController.FXML));
-
-        Scene scene = new Scene(root);
-
-        primaryStage.setScene(scene);
-
-        primaryStage.setTitle(HomeController.TITLE);
-
-        primaryStage.show();
-
-        primaryStage.setOnCloseRequest(new EventHandler<>() {
-            @Override
-            public void handle(WindowEvent event) {
-                event.consume();
-                try {
-                    if(FXHelper.closeProgram(this, primaryStage))
-                        primaryStage.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+    //region GlobalMethods
 
     public static void sync(){
         SyncService syncService = new SyncService();
@@ -144,6 +197,10 @@ public class Main extends Application {
         return syncControllerInterface;
     }
 
+    //endregion
+
+
+    //region Logging
 
     public static void outputError(Exception e){
         outputError("", e);
@@ -151,11 +208,28 @@ public class Main extends Application {
 
     public static void outputError(String message, Exception e){
         System.out.println(message);
+        String displayError = String.format("%s \n %s \n", message, e.toString());
+
+        addToLogger(displayError);
     }
 
     public static void outputVerbose(String message){
         System.out.println(message);
+        String displayMessage = message + "\n";
+        addToLogger(displayMessage);
     }
+
+    private static void addToLogger(String message) {
+        logger.append(message);
+        if (loggerInterface != null)
+            loggerInterface.updateLogger(message);
+    }
+
+    public static String getLoggerText(){
+        return logger.toString();
+    }
+
+    //endregion
 
 
 }
