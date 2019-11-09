@@ -104,10 +104,9 @@ public class Main extends Application {
     public static void sync(){
         SyncService syncService = new SyncService();
         syncService.restart();
-        refreshList();
     }
 
-    private static void refreshList(){
+    public static void refreshList(){
         if(syncControllerInterface != null){
             syncControllerInterface.refreshLists();
             Main.outputVerbose("refresh list");

@@ -98,6 +98,7 @@ public class SyncService extends Service<Void> {
                     handleChanges(changes.getPc(), changes.getMobile(), changes.getStat());
 
                     update("Sync Complete",8);
+                    Main.refreshList();
                 }catch(Exception e){
                     e.printStackTrace();
                     Main.outputError("Error syncing", e);
