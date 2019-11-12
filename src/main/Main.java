@@ -37,6 +37,10 @@ public class Main extends Application {
 
     //todo: start over server once connection reset
 
+    //todo: logger display blury
+
+    //todo: logger display hides behind main window
+
 
     public static void main(String[] args) {
         onStartUp();
@@ -161,8 +165,13 @@ public class Main extends Application {
 
     public static void refreshList(){
         if(syncControllerInterface != null){
-            syncControllerInterface.refreshLists();
-            Main.outputVerbose("refresh list");
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    syncControllerInterface.refreshLists();
+                    Main.outputVerbose("refresh list");
+                }
+            });
         }else{
             Main.outputVerbose("attempted to refresh list but controller instance was null");
         }
