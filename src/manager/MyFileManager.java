@@ -5,6 +5,7 @@ import main.Main;
 import library.sharedpackage.manager.ItemManager;
 import library.sharedpackage.models.FileContent;
 import org.apache.commons.io.FileUtils;
+import utility.Settings;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -18,14 +19,12 @@ public class MyFileManager implements ItemManager, FileFilter {
 
     private static File folder;
 
-    private static final String[] FILE_EXTENSIONS = new String[]{"mp4", "mkv", "flv"};
-
     private final List<String> FILE_EXTENSIONS_LIST;
 
     private static MyFileManager instance;
 
-    public static MyFileManager getInstance(String folderPath){
-        instance = new MyFileManager(folderPath);
+    public static MyFileManager getInstance(Settings settings){
+        instance = new MyFileManager(settings);
 
         return instance;
     }
@@ -37,9 +36,9 @@ public class MyFileManager implements ItemManager, FileFilter {
         return instance;
     }
 
-    private MyFileManager(String folderPath){
-        folder = new File(folderPath);
-        FILE_EXTENSIONS_LIST = new LinkedList<>(Arrays.asList(FILE_EXTENSIONS));
+    private MyFileManager(Settings settings){
+        folder = new File(settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION));
+        FILE_EXTENSIONS_LIST = getFileExtensionList(settings.getValue(Settings.SettingsKeys.FILE_EXTENSIONS));
     }
 
     @Override
@@ -95,6 +94,11 @@ public class MyFileManager implements ItemManager, FileFilter {
         isRightFileType = FILE_EXTENSIONS_LIST.contains(fileExtension);
 
         return isFile && isRightFileType;
+    }
+
+    private LinkedList<String> getFileExtensionList(String fileExtensionList){
+        String[] array = fileExtensionList.split(",");
+        return new LinkedList<>(Arrays.asList(array));
     }
 
     private String getFileExtension(String fileName){

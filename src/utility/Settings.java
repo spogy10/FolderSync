@@ -22,6 +22,7 @@ public class Settings implements SettingInterface {
     private static final String DEFAULT_FOLDER_LOCATION = "E:\\poliv\\Videos\\TEW BII WATCHED";
     private static final int DEFAULT_SERVER_PORT_NUMBER = 4000;
     private static final int DEFAULT_SERVER_BACKLOG = 1;
+    private static final String DEFAULT_FILE_EXTENSIONS = "mp4,mkv,flv";
 
     public static Settings getInstance(){
         if(instance == null)
@@ -120,6 +121,7 @@ public class Settings implements SettingInterface {
         settingsMap.put(String.valueOf(SettingsKeys.FOLDER_LOCATION), DEFAULT_FOLDER_LOCATION);
         settingsMap.put(String.valueOf(SettingsKeys.SERVER_PORT_NUMBER), String.valueOf(DEFAULT_SERVER_PORT_NUMBER));
         settingsMap.put(String.valueOf(SettingsKeys.SERVER_BACKLOG), String.valueOf(DEFAULT_SERVER_BACKLOG));
+        settingsMap.put(String.valueOf(SettingsKeys.FILE_EXTENSIONS), DEFAULT_FILE_EXTENSIONS);
     }
 
     public static String escapeString(String string){
@@ -147,6 +149,7 @@ public class Settings implements SettingInterface {
     public enum SettingsKeys{
         FOLDER_LOCATION,
         SERVER_PORT_NUMBER,
-        SERVER_BACKLOG
+        SERVER_BACKLOG,
+        FILE_EXTENSIONS
     }
 }

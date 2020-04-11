@@ -14,7 +14,7 @@ class MyFileManagerTest {
 
     @BeforeEach
     void init(){
-        myFileManager = MyFileManager.getInstance(Settings.getInstance().getValue(Settings.SettingsKeys.FOLDER_LOCATION));
+        myFileManager = MyFileManager.getInstance(Settings.getInstance());
     }
 
 

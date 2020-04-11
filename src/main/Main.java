@@ -58,7 +58,7 @@ public class Main extends Application {
         logger = new StringBuilder("");
         startLoggerDisplay();
         Settings settings = Settings.getInstance();
-        MyFileManager.getInstance(settings.getValue(Settings.SettingsKeys.FOLDER_LOCATION));
+        MyFileManager.getInstance(settings);
         getRemoteItemManager();
         try {
             if(!Status.setUpStatus())
