@@ -2,11 +2,14 @@ package utility;
 
 import main.Main;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.HashSet;
 
 public class FileManager {
+
+    public static boolean WriteFile(String directory, String fileName, String content) throws IOException{
+        return WriteFile(directory+File.separator+fileName, content);
+    }
 
     public static boolean WriteFile(String fileName, String content) throws IOException {
         boolean success = false;
@@ -33,5 +36,40 @@ public class FileManager {
         }
 
         return success;
+    }
+
+    public static <T> T ReadFile(String directory, String fileName) throws IOException, ClassNotFoundException {
+        return ReadFile(directory+File.separator+fileName);
+    }
+
+    public static <T> T ReadFile(String fileName) throws IOException, ClassNotFoundException {
+        ObjectInputStream ois = null;
+        String errorMessage = "FileManager.ReadFile: Error reading from file: "+fileName;
+        try {
+            File file = new File(fileName);
+            ois = new ObjectInputStream(new FileInputStream(file));
+
+            return (T) ois.readObject();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Main.outputError(errorMessage, e);
+            throw e;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Main.outputError(errorMessage, e);
+            throw e;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            Main.outputError(errorMessage, e);
+            throw e;
+        } finally {
+            if (ois != null)
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Main.outputError(errorMessage, e);
+                }
+        }
     }
 }

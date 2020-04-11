@@ -4,6 +4,7 @@ import exceptions.StatusNotIntializedException;
 import main.Main;
 import library.sharedpackage.manager.ItemManager;
 import library.sharedpackage.models.FileContent;
+import utility.FileManager;
 
 import java.io.*;
 import java.util.HashSet;
@@ -65,39 +66,16 @@ public class Status implements ItemManager {
     }
 
     private static boolean retrieveStatusFromFile() {
-        boolean success = false;
-        ObjectInputStream ois = null;
-
         String errorMessage = "Status could not be retrieved from file";
 
         try {
-            File statusFile = new File(FOLDER_NAME, FILE_NAME);
-            ois = new ObjectInputStream(new FileInputStream(statusFile));
-
-            status = (HashSet<String>) ois.readObject();
-
-            success = true;
-        } catch (FileNotFoundException e) {
+            status = FileManager.ReadFile(FOLDER_NAME, FILE_NAME);
+            return true;
+        }  catch (Exception e) {
             e.printStackTrace();
             Main.outputError(errorMessage, e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.outputError(errorMessage, e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            Main.outputError(errorMessage, e);
-        } finally {
-            if (ois != null)
-                try {
-                    ois.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Main.outputError(errorMessage, e);
-                    success = false;
-                }
-
         }
-        return success;
+        return false;
     }
 
     public static boolean setUpStatus(){
