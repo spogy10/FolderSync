@@ -4,13 +4,11 @@ import main.Main;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-@SuppressWarnings("Duplicates")
 public class Settings implements SettingInterface {
     private static Settings instance = null;
 
@@ -21,7 +19,6 @@ public class Settings implements SettingInterface {
     private static final String escapeCharacter = "\\";
     private static final String characterToEscape = "\"";
 
-    //private static final String DEFAULT_FOLDER_LOCATION = "E:\\poliv\\Videos\\TEW BII WATCHED\\test";
     private static final String DEFAULT_FOLDER_LOCATION = "E:\\poliv\\Videos\\TEW BII WATCHED";
     private static final int DEFAULT_SERVER_PORT_NUMBER = 4000;
     private static final int DEFAULT_SERVER_BACKLOG = 1;
@@ -37,7 +34,6 @@ public class Settings implements SettingInterface {
         if(!loadSettings()){
             resetSettings();
         }
-
     }
 
     private String getValue(String key){
@@ -59,11 +55,6 @@ public class Settings implements SettingInterface {
         }
 
         return s.toString();
-    }
-
-    private Map<String, String> stringToMap(String string){
-
-        return inputToMap(new Scanner(string));
     }
 
     private Map<String, String> inputToMap(Scanner slevel0){
