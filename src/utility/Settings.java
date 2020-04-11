@@ -106,6 +106,9 @@ public class Settings implements SettingInterface {
     @Override
     public boolean loadSettings() {
         try{
+            var file = new File(SETTING_FILE_NAME);
+            if(!file.exists() || !file.isFile())
+                throw new FileNotFoundException("Settings file could not be found");
             settingsMap = fileToMap(new File(SETTING_FILE_NAME));
             return settingsMap.size() > 0;
         } catch (FileNotFoundException e) {
