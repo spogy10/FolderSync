@@ -76,7 +76,6 @@ public class Settings implements SettingInterface {
             String key = getKeyFromLevel1Parser(sLevel1.next());
             String value = getValueFromLevel1Parser(sLevel1.next());
             map.put(key, value);
-
         }
         return map;
     }
@@ -99,48 +98,29 @@ public class Settings implements SettingInterface {
 
     @Override
     public boolean saveSettings() {
-        boolean success = false;
         String save = mapToString();
+        Main.outputVerbose("Settings: "+save);
 
-        System.out.println(save);
-        FileWriter fileWriter = null;
         try {
-            fileWriter = new FileWriter(new File(SETTING_FILE_NAME));
-
-            fileWriter.write(save);
-            fileWriter.close();
-            success = true;
+            return FileManager.WriteFile(SETTING_FILE_NAME, save);
         } catch (IOException e) {
             Main.outputError("Settings not saved", e);
             e.printStackTrace();
-            success = false;
-        }finally {
-            if(fileWriter != null){
-                try{
-                    fileWriter.close();
-                } catch (IOException e) {
-                    Main.outputError("Settings not saved", e);
-                    e.printStackTrace();
-                    success = false;
-                }
-            }
         }
 
-        return success;
+        return false;
     }
 
     @Override
     public boolean loadSettings() {
-        boolean success = false;
         try{
             settingsMap = fileToMap(new File(SETTING_FILE_NAME));
-            success = settingsMap.size() > 0;
+            return settingsMap.size() > 0;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Main.outputError("Could not load settings", e);
-            success = false;
         }
-        return success;
+        return false;
     }
 
     @Override
