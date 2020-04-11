@@ -44,14 +44,18 @@ public class MyFileManager implements ItemManager, FileFilter {
     @Override
     public boolean removeItems(List<String> fileNames) {
         boolean success = true;
+        String informationMessageHeader = "MyFileManager.removeItems";
         for(String fileName : fileNames){
             try{
 
-                Files.deleteIfExists(new File(folder, fileName).toPath());
-
+                boolean result = Files.deleteIfExists(new File(folder, fileName).toPath());
+                if(result)
+                    Main.outputInformation(informationMessageHeader+" "+fileName+" deleted.");
+                else
+                    Main.outputInformation(informationMessageHeader+" "+fileName+" does not exist.");
             } catch (IOException e) {
                 e.printStackTrace();
-                String message = "Error deleting file :"+fileName;
+                String message = informationMessageHeader + " Error deleting file :"+fileName;
                 Main.outputError(message, e);
                 success = false;
             }

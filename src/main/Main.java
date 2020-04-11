@@ -228,6 +228,12 @@ public class Main extends Application {
         addToLogger(displayMessage);
     }
 
+    public static void outputInformation(String message){
+        System.out.println(message);
+        String displayMessage = message + "\n";
+        addToLogger(displayMessage);
+    }
+
     private static void addToLogger(String message) {
         logger.append(message);
         if (loggerInterface != null)
