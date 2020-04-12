@@ -26,43 +26,17 @@ public class Status implements ItemManager {
 
     public static boolean saveStatus() throws StatusNotIntializedException {
         isStatusInitialized();
-        String errorMessage = "Status file not saved created";
+        String errorMessage = "Status file not saved";
 
-        boolean success = false;
-        ObjectOutputStream oos = null;
         try {
-            File file = new File(FOLDER_NAME);
-            if (!file.isDirectory())
-                file.mkdir();
-            File statusFile = new File(file, FILE_NAME);
-
-            oos = new ObjectOutputStream(new FileOutputStream(statusFile));
-
-            oos.writeObject(status);
-            oos.flush();
-
-            success = true;
-
-        } catch (FileNotFoundException e) {
+            FileManager.WriteFile(FOLDER_NAME, FILE_NAME, status);
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
             Main.outputError(errorMessage, e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Main.outputError(errorMessage, e);
-        } finally {
-            if (oos == null)
-                success = false;
-            else {
-                try {
-                    oos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Main.outputError(errorMessage, e);
-                    success = false;
-                }
-            }
         }
-        return success;
+
+        return false;
     }
 
     private static boolean retrieveStatusFromFile() {
@@ -123,24 +97,6 @@ public class Status implements ItemManager {
 
         status.clear();
     }
-
-//    @Override
-//    public boolean addItems(List<FileContent> files) {
-//        String errorMessage = "Status not initialized in addToStatus method";
-//
-//        try{
-//            isStatusInitialized();
-//        } catch (StatusNotIntializedException e) {
-//            Main.outputError(errorMessage, e);
-//            initializeStatus();
-//            return false;
-//        }
-//        for(FileContent fileName : files){
-//            status.add(fileName.getFileName());
-//        }
-//
-//        return true;
-//    }
 
     @Override
     public boolean removeItems(List<String> fileNames) {

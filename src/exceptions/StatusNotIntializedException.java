@@ -11,3 +11,4 @@ public class StatusNotIntializedException extends Exception {
         super(message);
     }
 }
+

@@ -1,5 +1,6 @@
 package utility;
 
+import exceptions.DirectoryCreationException;
 import main.Main;
 
 import java.io.*;
@@ -7,19 +8,25 @@ import java.util.HashSet;
 
 public class FileManager {
 
-    public static boolean WriteFile(String directory, String fileName, String content) throws IOException{
-        return WriteFile(directory+File.separator+fileName, content);
+    private static void createDirectoryIfNotExists(String directory) throws DirectoryCreationException {
+        File file = new File(directory);
+        if (file.isDirectory())
+            return;
+
+        if(!file.mkdir())
+            throw new DirectoryCreationException("Unable to create directory: "+directory);
     }
 
-    public static boolean WriteFile(String fileName, String content) throws IOException {
-        boolean success = false;
+    public static void WriteStringToFile(String directory, String fileName, String content) throws IOException{
+        WriteStringToFile(directory+File.separator+fileName, content);
+    }
+
+    public static void WriteStringToFile(String fileName, String content) throws IOException {
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(new File(fileName));
             fileWriter.write(content);
             fileWriter.flush();
-            fileWriter.close();
-            success = true;
         } catch (IOException e) {
             Main.outputError("Error writing to file "+fileName, e);
             e.printStackTrace();
@@ -34,8 +41,43 @@ public class FileManager {
                 }
             }
         }
+    }
 
-        return success;
+    public static <T> void WriteFile(String directory, String fileName, T content) throws IOException, DirectoryCreationException {
+        createDirectoryIfNotExists(directory);
+
+        WriteFile(directory+File.separator+fileName, content);
+    }
+
+    public static <T> void WriteFile(String fileName, T content) throws IOException {
+        ObjectOutputStream oos = null;
+        String errorMessage = "Unable to write object to file: "+fileName;
+
+        try {
+            File file = new File(fileName);
+
+            oos = new ObjectOutputStream(new FileOutputStream(file));
+
+            oos.writeObject(content);
+            oos.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Main.outputError(errorMessage, e);
+            throw e;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Main.outputError(errorMessage, e);
+            throw e;
+        } finally {
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Main.outputError("Error closing ObjectOutputStream for: "+fileName, e);
+                }
+            }
+        }
     }
 
     public static <T> T ReadFile(String directory, String fileName) throws IOException, ClassNotFoundException {

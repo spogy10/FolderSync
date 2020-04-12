@@ -94,7 +94,8 @@ public class Settings implements SettingInterface {
         Main.outputVerbose("Settings: "+save);
 
         try {
-            return FileManager.WriteFile(SETTING_FILE_NAME, save);
+            FileManager.WriteStringToFile(SETTING_FILE_NAME, save);
+            return true;
         } catch (IOException e) {
             Main.outputError("Settings not saved", e);
             e.printStackTrace();
