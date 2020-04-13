@@ -31,5 +31,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="jsr305-3.0.2" level="project" />
+    <orderEntry type="library" name="log4j-api-2.13.1" level="project" />
+    <orderEntry type="library" name="jackson-annotations-2.11.0.rc1" level="project" />
   </component>
 </module>

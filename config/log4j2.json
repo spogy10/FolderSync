@@ -1,0 +1,25 @@
+{
+  "configuration": {
+    "status": "error",
+    "name": "DefaultLoggerConfig",
+    "packages": "main",
+    "appenders": {
+      "Console": {
+        "name": "ConsoleAppender",
+        "PatternLayout": {
+          "pattern": "%d [%t] %-5p %c - %m%n"
+        }
+      }
+    },
+    "loggers": {
+      "root": {
+        "level": "debug",
+        "AppenderRef": {
+          "ref": "ConsoleAppender"
+        },"AppenderRef": {
+          "ref": "ConsoleAppender"
+        }
+      }
+    }
+  }
+}

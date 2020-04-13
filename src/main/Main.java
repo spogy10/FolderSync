@@ -20,18 +20,23 @@ import manager.MyFileManager;
 import manager.MyRemoteItemManager;
 import manager.UpdatableRemoteItemManager;
 import models.Status;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import services.SyncService;
+import utility.LoggerUtility;
 import utility.Settings;
 
 import java.io.IOException;
 
 public class Main extends Application {
 
+    private static final Logger logger = LogManager.getLogger();
+
     private static UpdatableRemoteItemManager remoteItemManager;
     private static SyncControllerInterface syncControllerInterface;
     private static LoggerInterface loggerInterface;
 
-    private static StringBuilder logger;
+    private static StringBuilder stringLogger;
 
     //todo set up folder selection
 
@@ -55,7 +60,8 @@ public class Main extends Application {
     //region Application Events
 
     private static void onStartUp(){
-        logger = new StringBuilder("");
+        stringLogger = new StringBuilder("");
+        LoggerUtility.configureLogger();
         startLoggerDisplay();
         Settings settings = Settings.getInstance();
         MyFileManager.getInstance(settings);
@@ -235,13 +241,13 @@ public class Main extends Application {
     }
 
     private static void addToLogger(String message) {
-        logger.append(message);
+        stringLogger.append(message);
         if (loggerInterface != null)
             loggerInterface.updateLogger(message);
     }
 
     public static String getLoggerText(){
-        return logger.toString();
+        return stringLogger.toString();
     }
 
     //endregion
