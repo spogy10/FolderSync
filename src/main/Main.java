@@ -38,8 +38,11 @@ public class Main extends Application {
     private static SyncControllerInterface syncControllerInterface;
     private static LoggerInterface loggerInterface;
 
+    //todo: different file for log level error and up
 
-    //todo set up folder selection
+    //todo: use logging all over project
+
+    //todo: set up folder selection
 
     //todo: start over server once connection reset
 
