@@ -20,16 +20,15 @@ import manager.MyFileManager;
 import manager.MyRemoteItemManager;
 import manager.UpdatableRemoteItemManager;
 import models.Status;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.SyncService;
 import utility.LoggerUtility;
 import utility.Settings;
+import utility.StringBuilderAppender;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Scanner;
 
 public class Main extends Application {
 
@@ -39,7 +38,6 @@ public class Main extends Application {
     private static SyncControllerInterface syncControllerInterface;
     private static LoggerInterface loggerInterface;
 
-    private static StringBuilder stringLogger;
 
     //todo set up folder selection
 
@@ -58,11 +56,9 @@ public class Main extends Application {
         onApplicationClose();
     }
 
-
     //region Application Events
 
     private static void onStartUp(){
-        stringLogger = new StringBuilder("");
         LoggerUtility.configureLogger();
         startLoggerDisplay();
         Settings settings = Settings.getInstance();
@@ -91,7 +87,8 @@ public class Main extends Application {
                     FXMLLoader loader = new FXMLLoader(Main.class.getResource(LoggerController.FXML));
                     Parent root = (Parent)loader.load();
 
-                    loggerInterface = (LoggerInterface) loader.getController();
+                    loggerInterface = loader.getController();
+                    StringBuilderAppender.setLoggerInterface(loggerInterface);
 
                     Scene scene = new Scene(root);
 
@@ -224,32 +221,23 @@ public class Main extends Application {
     }
 
     public static void outputError(String message, Exception e){
-        System.out.println(message);
-        String displayError = String.format("%s \n %s \n", message, e.toString());
-
-        addToLogger(displayError);
+        addToLogger(message, Level.ERROR, e);
     }
 
     public static void outputVerbose(String message){
-        System.out.println(message);
-        String displayMessage = message + "\n";
-        addToLogger(displayMessage);
+        addToLogger(message, Level.DEBUG);
     }
 
     public static void outputInformation(String message){
-        System.out.println(message);
-        String displayMessage = message + "\n";
-        addToLogger(displayMessage);
+        addToLogger(message, Level.INFO);
     }
 
-    private static void addToLogger(String message) {
-        stringLogger.append(message);
-        if (loggerInterface != null)
-            loggerInterface.updateLogger(message);
+    private static void addToLogger(String message, Level level) {
+        logger.log(level, message);
     }
 
-    public static String getLoggerText(){
-        return stringLogger.toString();
+    private static void addToLogger(String message, Level level, Exception e) {
+        logger.log(level, message, e);
     }
 
     //endregion

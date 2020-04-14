@@ -5,6 +5,7 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import logger.LoggerInterface;
 import main.Main;
+import utility.StringBuilderAppender;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,7 +20,7 @@ public class LoggerController implements Initializable, LoggerInterface {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        taDisplay.setText(Main.getLoggerText());
+        taDisplay.setText(StringBuilderAppender.getLoggerText());
     }
 
     public void updateLogger(String message){

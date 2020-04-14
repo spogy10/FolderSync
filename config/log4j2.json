@@ -2,7 +2,7 @@
   "configuration": {
     "status": "error",
     "name": "DefaultLoggerConfig",
-    "packages": "main",
+    "packages": "main,utility",
     "properties": {
       "property": [
         {
@@ -40,6 +40,12 @@
             "interval": "1"
           }
         }
+      },
+      "StringBuilderAppender": {
+        "name": "StringAppender",
+        "PatternLayout": {
+          "pattern": "${pattern}"
+        }
       }
     },
     "loggers": {
@@ -51,6 +57,9 @@
           },
           {
             "ref": "FileAppender"
+          },
+          {
+            "ref": "StringAppender"
           }
         ]
       }
