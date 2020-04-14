@@ -3,22 +3,56 @@
     "status": "error",
     "name": "DefaultLoggerConfig",
     "packages": "main",
+    "properties": {
+      "property": [
+        {
+          "name": "pattern",
+          "value": "%d{yyy-mm-dd HH:mm:ss} [%t] %-5p %l - %m%n"
+        },
+        {
+          "name": "LogDir",
+          "value": "log"
+        }
+      ]
+    },
     "appenders": {
       "Console": {
         "name": "ConsoleAppender",
         "PatternLayout": {
-          "pattern": "%d [%t] %-5p %c - %m%n"
+          "pattern": "${pattern}"
+        }
+      },
+      "RollingFile": {
+        "name": "FileAppender",
+        "fileName": "${LogDir}/synclog.log",
+        "filePattern": "${LogDir}/%d{dd-MM-yyyy}.synclog.log",
+        "append": "true",
+        "bufferedIO": "true",
+        "createOnDemand": "true",
+        "PatternLayout": {
+          "pattern": "${pattern}"
+        },
+        "Policies": {
+          "SizeBasedTriggeringPolicy": {
+            "size": "10MB"
+          },
+          "TimeBasedTriggeringPolicy": {
+            "interval": "1"
+          }
         }
       }
     },
     "loggers": {
       "root": {
         "level": "debug",
-        "AppenderRef": {
-          "ref": "ConsoleAppender"
-        },"AppenderRef": {
-          "ref": "ConsoleAppender"
-        }
+        "AppenderRef": [
+          {
+            "ref": "ConsoleAppender"
+          },
+          {
+            "ref": "FileAppender"
+          }
+        ]
       }
     }
   }

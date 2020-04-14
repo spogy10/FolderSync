@@ -26,7 +26,10 @@ import services.SyncService;
 import utility.LoggerUtility;
 import utility.Settings;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Main extends Application {
 
@@ -50,11 +53,10 @@ public class Main extends Application {
     public static void main(String[] args) {
         onStartUp();
 
-        launch(args);
+        //launch(args);
 
-        onApplicationClose();
+        //onApplicationClose();
     }
-
 
 
     //region Application Events

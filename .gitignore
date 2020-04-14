@@ -1,6 +1,8 @@
 #Custom ignored folders
 out/
 Status Folder/
+log/
+.idea/
 
 
 
