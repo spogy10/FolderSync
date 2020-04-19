@@ -14,7 +14,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
-import main.Main;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,6 +23,8 @@ import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoadingController implements Initializable {
+
+    private static final Logger logger = LogManager.getLogger();
 
     public static final String TITLE = "Loading";
     public static final String FXML = "/views/loading.fxml";
@@ -65,15 +68,15 @@ public class LoadingController implements Initializable {
 
     private static void showLoadingView(Object obj) throws IOException {
         if(isLoadingViewShowing()){
-            Main.outputVerbose("Loading view already showing");
+            logger.info("Loading view already showing");
             return;
         }
-        Main.outputVerbose("Loading view not already showing");
+        logger.info("Loading view not already showing");
         startLoadingView(obj);
     }
 
     public static void close(){
-        Main.outputVerbose("close loading view");
+        logger.info("close loading view");
         closeLoadingView();
     }
 
@@ -117,7 +120,7 @@ public class LoadingController implements Initializable {
     }
 
     private static void startLoadingView(Object obj) throws IOException {
-        Main.outputVerbose("Starting Loading View");
+        logger.info("Starting Loading View");
         loadingStage = new Stage();
         initializeProperties();
 

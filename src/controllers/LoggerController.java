@@ -4,7 +4,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import logger.LoggerInterface;
-import main.Main;
 import utility.StringBuilderAppender;
 
 import java.net.URL;

@@ -10,10 +10,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
 import library.sharedpackage.models.FileContent;
-import main.Main;
 import library.sharedpackage.manager.ItemManager;
+import main.Main;
 import manager.MyFileManager;
 import models.Status;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import services.RefreshListService;
 import utility.Resources;
 
@@ -28,6 +30,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
     public static final String TITLE = "Sync";
     public static final String FXML = "/views/sync.fxml";
 
+    private static final Logger logger = LogManager.getLogger();
     private ItemManager fileManager = MyFileManager.getInstance();
     private ItemManager statusManager = new Status();
     private ItemManager remoteManager = Main.getRemoteItemManager();
@@ -71,7 +74,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
             Status.clearStatusList();
         } catch (StatusNotIntializedException e) {
             e.printStackTrace();
-            Main.outputError(e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -145,7 +148,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
         List<FileContent> files = MyFileManager.getInstance().getItems(fileNames);
 
         for(FileContent file : files){
-            Main.outputVerbose(file.toString());
+            logger.info(file.toString());
         }
 
         Thread t = new Thread(() -> {
@@ -158,7 +161,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
         //        LinkedList<String> removeFiles = new LinkedList<>();
 //        removeFiles.add(lvA.getSelectionModel().getSelectedItem());
 //        for(String fileName : removeFiles){
-//            Main.outputVerbose("File to be removed: "+fileName);
+//            logger.info("File to be removed: "+fileName);
 //        }
 //        new Thread(() -> {
 //            Main.getRemoteItemManager().removeItems(removeFiles);
@@ -166,7 +169,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
         LinkedList<String> removeFilesRemote = new LinkedList<>(Arrays.asList("testFile-10.mp4", "testFile-5.mp4"));
         for(String fileName : removeFilesRemote){
-            Main.outputVerbose("File to be removed from remote: "+fileName);
+            logger.info("File to be removed from remote: "+fileName);
         }
         new Thread(() -> {
             Main.getRemoteItemManager().removeItems(removeFilesRemote);
@@ -174,7 +177,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
         LinkedList<String> removeFilesPC = new LinkedList<>(Arrays.asList("testFile-17.mp4", "testFile-7.mp4"));
         for(String fileName : removeFilesPC){
-            Main.outputVerbose("File to be removed from PC: "+fileName);
+            logger.info("File to be removed from PC: "+fileName);
         }
 
         fileManager.removeItems(removeFilesPC);
