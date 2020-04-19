@@ -1,6 +1,7 @@
 package utility;
 
-import main.Main;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +11,9 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Settings implements SettingInterface {
+
+    private static final Logger logger = LogManager.getLogger();
+    
     private static Settings instance = null;
 
     private static final String SETTING_FILE_NAME = "Settings.txt";
@@ -91,13 +95,13 @@ public class Settings implements SettingInterface {
     @Override
     public boolean saveSettings() {
         String save = mapToString();
-        Main.outputVerbose("Settings: "+save);
+        logger.info("Settings: "+save);
 
         try {
             FileManager.WriteStringToFile(SETTING_FILE_NAME, save);
             return true;
         } catch (IOException e) {
-            Main.outputError("Settings not saved", e);
+            logger.error("Settings not saved "+e.getMessage(), e);
             e.printStackTrace();
         }
 
@@ -114,7 +118,7 @@ public class Settings implements SettingInterface {
             return settingsMap.size() > 0;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Main.outputError("Could not load settings", e);
+            logger.error("Could not load settings: "+e.getMessage(), e);
         }
         return false;
     }
