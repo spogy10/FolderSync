@@ -2,25 +2,21 @@ package server;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import library.sharedpackage.communication.DataCarrier;
 import library.sharedpackage.models.FileContent;
-import main.Main;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utility.Settings;
 
 import javax.annotation.Nullable;
 import java.io.*;
 import java.net.*;
-import java.rmi.MarshalledObject;
 import java.util.Iterator;
 
 public class Server implements Runnable {
+    private static final Logger logger = LogManager.getLogger();
+
     private ServerSocket serverSocket = null;
     private Socket connection = null;
     private ObjectOutputStream os = null;
@@ -84,8 +80,8 @@ public class Server implements Runnable {
                     Iterator<InetAddress> addressIterator =  network.getInetAddresses().asIterator();
 
                     InetAddress address = addressIterator.next();
-                    Main.outputVerbose("Address: "+address.getHostAddress());
-                    Main.outputVerbose("Name: "+address.getHostName());
+                    logger.info("Address: "+address.getHostAddress());
+                    logger.info("Name: "+address.getHostName());
 
                     break;
                 }
@@ -93,7 +89,7 @@ public class Server implements Runnable {
             }
         } catch (SocketException e) {
             e.printStackTrace();
-            Main.outputError(e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -107,7 +103,7 @@ public class Server implements Runnable {
             return true;
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError("Error initializing streams", e);
+            logger.error("Error initializing streams: "+e.getMessage(), e);
         }
 
         return false;
@@ -121,10 +117,10 @@ public class Server implements Runnable {
                 is.close();
             if(connection != null)
                 connection.close();
-            Main.outputVerbose("Server connections closed");
+            logger.info("Server connections closed");
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError("Error closing connections", e);
+            logger.error("Error closing connections: "+e.getMessage(), e);
         }
 
         os = null;
@@ -141,7 +137,7 @@ public class Server implements Runnable {
     }
 
     void restartServer(){
-        Main.outputVerbose("Restarting Server");
+        logger.info("Restarting Server");
         endServer();
         setUpConnection();
     }
@@ -150,10 +146,10 @@ public class Server implements Runnable {
         try {
             closeConnection();
             serverSocket.close();
-            Main.outputVerbose("Server ended");
+            logger.info("Server ended");
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError("Error ending server", e);
+            logger.error("Error ending server: "+e.getMessage(), e);
         }
 
         serverOff = true;
@@ -169,25 +165,25 @@ public class Server implements Runnable {
     }
 
     private void waitForRequests() {
-        Main.outputVerbose("Waiting for requests");
+        logger.info("Waiting for requests");
 
         try{
             serverOff = false;
             connection = serverSocket.accept();
             if(initStreams()){
-                Main.outputVerbose("connection received");
+                logger.info("connection received");
                 if(runnable != null){
                     runnable.run();
                     return;
                 }
-                Main.outputVerbose("Could not start ServerHandler Thread");
+                logger.warn("Could not start ServerHandler Thread");
             }
 
             endServer();
 
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError("Error starting server", e);
+            logger.error("Error starting server: "+e.getMessage(), e);
         }
     }
     //endregion
@@ -196,19 +192,19 @@ public class Server implements Runnable {
     //region NOTIFICATION
 
     private void notifyRequestSent(String request) {
-        Main.outputVerbose("Request: "+request+" sent");
+        logger.debug("Request: "+request+" sent");
     }
 
     private void notifyResponseSent(String response){
-        Main.outputVerbose("Response: "+response+" sent");
+        logger.debug("Response: "+response+" sent");
     }
 
     private void notifyRequestReceived(String request) {
-        Main.outputVerbose("Request "+request+" received");
+        logger.debug("Request "+request+" received");
     }
 
     private void notifyResponseReceived(String response){
-        Main.outputVerbose("Response "+response+" received");
+        logger.debug("Response "+response+" received");
     }
     //endregion
 
@@ -243,9 +239,9 @@ public class Server implements Runnable {
         boolean success = false;
 
         if(dc.isRequest())
-            Main.outputVerbose("Request "+ dc.getInfo() +" to send file commence");
+            logger.debug("Request "+ dc.getInfo() +" to send file commence");
         else
-            Main.outputVerbose("Response "+ dc.getInfo() +" to send file commence");
+            logger.debug("Response "+ dc.getInfo() +" to send file commence");
 
         FileInputStream fis = null;
         try{
@@ -262,10 +258,10 @@ public class Server implements Runnable {
             success = true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Main.outputError("Error sending file", e);
+            logger.error("Error sending file: "+e.getMessage(), e);
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError("Error sending file", e);
+            logger.error("Error sending file: "+e.getMessage(), e);
         } finally {
             if(fis == null){
                 success = false;
@@ -274,7 +270,7 @@ public class Server implements Runnable {
                     fis.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Main.outputError("Error closing input stream of send file method", e);
+                    logger.error("Error closing input stream of send file method: "+e.getMessage(), e);
                     success = false;
                 }
             }
@@ -287,21 +283,21 @@ public class Server implements Runnable {
             return true;
         }else{
             if(dc.isRequest())
-                Main.outputVerbose("Could not send file for request: "+ dc.getInfo());
+                logger.warn("Could not send file for request: "+ dc.getInfo());
             else
-                Main.outputVerbose("Could not send file for response: "+ dc.getInfo());
+                logger.warn("Could not send file for response: "+ dc.getInfo());
         }
 
         return false;
     }
 
     private void sendFileStream(final long totalFileSize, final FileInputStream fis) throws IOException {
-        Main.outputVerbose("In sendFileStream no updates method");
+        logger.debug("In sendFileStream no updates method");
         transferStreamData(fis, os, totalFileSize);
     }
 
     private void sendFileStream(final long totalFileSize, final FileInputStream fis, DoubleProperty loadingProperty) throws IOException {
-        Main.outputVerbose("In sendFileStream updates method");
+        logger.debug("In sendFileStream updates method");
         transferStreamData(fis, os, totalFileSize, loadingProperty);
     }
 
@@ -313,9 +309,9 @@ public class Server implements Runnable {
         boolean success = false;
 
         if(dc.isRequest())
-            Main.outputVerbose("Request "+ dc.getInfo() +" to receive file commence");
+            logger.debug("Request "+ dc.getInfo() +" to receive file commence");
         else
-            Main.outputVerbose("Response "+ dc.getInfo() +" to receive file commence");
+            logger.debug("Response "+ dc.getInfo() +" to receive file commence");
 
         FileOutputStream fos = null;
         try{
@@ -332,10 +328,10 @@ public class Server implements Runnable {
             success = true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Main.outputError("Error receiving file", e);
+            logger.error("Error receiving file: "+e.getMessage(), e);
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError("Error receiving file", e);
+            logger.error("Error receiving file: "+e.getMessage(), e);
         } finally {
             if(loadingProperty != null){
                 loadingProperty.unbind();
@@ -349,7 +345,7 @@ public class Server implements Runnable {
                     fos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Main.outputError("Error closing out stream of receive file method", e);
+                    logger.error("Error closing out stream of receive file method: "+e.getMessage(), e);
                     success = false;
                 }
             }
@@ -362,21 +358,21 @@ public class Server implements Runnable {
             return true;
         }else{
             if(dc.isRequest())
-                Main.outputVerbose("Could not receive file for request: "+ dc.getInfo());
+                logger.warn("Could not receive file for request: "+ dc.getInfo());
             else
-                Main.outputVerbose("Could not receive file for response: "+ dc.getInfo());
+                logger.warn("Could not receive file for response: "+ dc.getInfo());
         }
 
         return false;
     }
 
     private void receiveFileStream(final long totalFileSize, final FileOutputStream fos) throws IOException {
-        Main.outputVerbose("In receiveFileStream no updates method");
+        logger.debug("In receiveFileStream no updates method");
         transferStreamData(is, fos, totalFileSize);
     }
 
     private void receiveFileStream(final long totalFileSize, final FileOutputStream fos, DoubleProperty loadingProperty) throws IOException {
-        Main.outputVerbose("In receiveFileStream updates method");
+        logger.debug("In receiveFileStream updates method");
         transferStreamData(is, fos, totalFileSize, loadingProperty);
     }
     //endregion

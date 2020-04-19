@@ -7,10 +7,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import library.sharedpackage.communication.DC;
 import library.sharedpackage.communication.DataCarrier;
-import main.Main;
 import library.sharedpackage.manager.ItemManager;
 import library.sharedpackage.models.FileContent;
+import main.Main;
 import manager.MyRemoteItemManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -20,16 +22,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ServerHandler implements Runnable, RequestSenderInterface {
     private static final String CONNECTION_RESET_EXCEPTION_STRING = "java.net.SocketException: Connection reset";
     private static final String END_OF_FILE_EXCEPTION_STRING = "java.io.EOFException";
+    private static final Logger logger = LogManager.getLogger();
 
-    private Server server;
-    private ItemManager remoteManager;
+    private final Server server;
+    private final ItemManager remoteManager;
 
-    private AtomicBoolean unreadResponse = new AtomicBoolean(false);
+    private final AtomicBoolean unreadResponse = new AtomicBoolean(false);
     private DataCarrier tempResponseHolder;
-    private AtomicBoolean pauseThread = new AtomicBoolean(false);
+    private final AtomicBoolean pauseThread = new AtomicBoolean(false);
 
-    private StringProperty updateProperty;
-    private DoubleProperty progressProperty;
+    private final StringProperty updateProperty;
+    private final DoubleProperty progressProperty;
 
     private static ServerHandler ourInstance = null;
 
@@ -57,7 +60,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
 
     @Override
     public void run() {
-        Main.outputVerbose("ServerHandler thread started");
+        logger.debug("ServerHandler thread started");
 
         DC action = DC.NO_INFO;
         try{
@@ -80,20 +83,18 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
             }
             DataCarrier dc = new DataCarrier(true, DC.DISCONNECT);
             sendRequest(dc, false);
-            Main.outputVerbose("client disconnected from server normally");
+            logger.debug("Client disconnected from server normally");
         } catch (IOException e) {
-            String message = "Error occurred in ServerHandler run method";
             if(e.toString().equals(CONNECTION_RESET_EXCEPTION_STRING) || e.toString().equals(END_OF_FILE_EXCEPTION_STRING))
-                message = "client disconnected from server";
+                logger.warn("Client disconnected from server: "+e.getMessage(), e);
             else
-                e.printStackTrace();
-            Main.outputError(message, e);
+                logger.error(e.getMessage(), e);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            Main.outputError("Error occurred in ServerHandler run method", e);
+            logger.error(e.getMessage(), e);
         } catch (Exception e){
             e.printStackTrace();
-            Main.outputError("Error occurred in ServerHandler run method", e);
+            logger.error(e.getMessage(), e);
         } finally {
             server.endServer();
             server.restartServer();
@@ -123,7 +124,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
     private DataCarrier sendRequest(DataCarrier request, boolean responseRequired){
         if(server.isServerOff() || !server.areStreamsInitialized()){
             String header = request.isRequest()? "Request:" : "Response:";
-            Main.outputVerbose(header + " " + request.getInfo() + " failed to send because connection not setup");
+            logger.warn(header + " " + request.getInfo() + " failed to send because connection not setup");
             return new DataCarrier(false, DC.CONNECTION_NOT_SETUP);
         }
 
@@ -165,7 +166,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
 
         if(!MyRemoteItemManager.responseCheck(initialResponse)){
             pauseThread.compareAndSet(true, false);
-            Main.outputVerbose("Error in Server Handler sendFiles, response check returned false");
+            logger.warn("Error in Server Handler sendFiles, response check returned false");
             sendRequest(cancelRequest, false);
             finalResponse.setInfo(DC.REMOTE_SERVER_ERROR);
             return finalResponse;
@@ -173,30 +174,30 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
 
         if(!initialResponse.getInfo().equals(DC.OK_TO_SEND_FILES)){
             pauseThread.compareAndSet(true, false);
-            Main.outputVerbose("Error in Server Handler sendFiles, remote server not ready to handle files");
+            logger.warn("Error in Server Handler sendFiles, remote server not ready to handle files");
             return finalResponse;
         }
 
-        Main.outputVerbose("Remote server ready to handle files");
+        logger.debug("Remote server ready to handle files");
 
         List<FileContent> files = request.getData();
         int count = 1;
         int total = files.size();
         for(FileContent fileContent : files){
-            Main.outputVerbose("Attempting to send "+fileContent.getFileName());
+            logger.info("Attempting to send "+fileContent.getFileName());
             DataCarrier<FileContent> sendFile = new DataCarrier<>(true, DC.ADD_ITEMS, fileContent);
             String message = String.format("Sending: %s (%d/%d)", fileContent.getFileName(), count, total);
             updateProperty(message);
             boolean currentSuccess = server.sendFile(sendFile, progressProperty);
             updateProperty("");
-            Main.outputVerbose("Sending "+fileContent.getFileName()+": "+currentSuccess);
+            logger.info("Sending "+fileContent.getFileName()+": "+currentSuccess);
 
             success = currentSuccess && success;
 
             count++;
         }
 
-        Main.outputVerbose("Finished sending files: "+success);
+        logger.info("Finished sending files: "+success);
 
         finalResponse.setInfo(DC.NO_ERROR);
         finalResponse.setData(success);
@@ -216,7 +217,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
 
         if(!MyRemoteItemManager.responseCheck(initialResponse)){
             pauseThread.compareAndSet(true, false);
-            Main.outputVerbose("Error in Server Handler receiveFiles, response check returned false");
+            logger.warn("Error in Server Handler receiveFiles, response check returned false");
             sendRequest(cancelRequest, false);
             finalResponse.setInfo(DC.REMOTE_SERVER_ERROR);
             return finalResponse;
@@ -224,35 +225,35 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
 
         if(!initialResponse.getInfo().equals(DC.GET_ITEMS)){
             pauseThread.compareAndSet(true, false);
-            Main.outputVerbose("Error in Server Handler receiveFiles, remote server did not send correct response");
+            logger.warn("Error in Server Handler receiveFiles, remote server did not send correct response");
             return finalResponse;
         }else if ( !( (initialResponse.getData() instanceof LinkedList) && ((LinkedList) initialResponse.getData()).get(0) instanceof FileContent ) ){
             pauseThread.compareAndSet(true, false);
-            Main.outputVerbose("Error in Server Handler receiveFiles, remote server did not send correct data");
+            logger.warn("Error in Server Handler receiveFiles, remote server did not send correct data");
             return finalResponse;
         }
 
-        Main.outputVerbose("Remote server ready to send files");
+        logger.debug("Remote server ready to send files");
 
 
         LinkedList<FileContent> files = (LinkedList<FileContent>) initialResponse.getData();
         int count = 1;
         int total = files.size();
         for(FileContent fileContent : files){
-            Main.outputVerbose("Attempting to receive "+fileContent.getFileName());
+            logger.info("Attempting to receive "+fileContent.getFileName());
             DataCarrier<FileContent> receiveFile = new DataCarrier<>(false, DC.GET_ITEMS, fileContent);
             String message = String.format("Receiving: %s (%d/%d)", fileContent.getFileName(), count, total);
             updateProperty(message);
             boolean currentSuccess = server.receiveFile(receiveFile, progressProperty);
             updateProperty("");
-            Main.outputVerbose("Receiving "+fileContent.getFileName()+": "+currentSuccess);
+            logger.info("Receiving "+fileContent.getFileName()+": "+currentSuccess);
 
             success = currentSuccess && success;
 
             count++;
         }
 
-        Main.outputVerbose("Finished receiving files: "+success);
+        logger.info("Finished receiving files: "+success);
 
         finalResponse.setInfo(success? DC.NO_ERROR : DC.GENERAL_ERROR);
         finalResponse.setData(files);
@@ -267,7 +268,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
     //region NOTIFICATION SECTION
 
     private void updateProperty(String updateMessage){
-        Main.outputVerbose(updateMessage);
+        logger.debug(updateMessage);
         Platform.runLater(() -> {
             updateProperty.setValue(updateMessage);
         });
