@@ -39,8 +39,6 @@ public class Main extends Application {
 
     //todo: different file for log level error and up
 
-    //todo: use logging all over project
-
     //todo: set up folder selection
 
     //todo: start over server once connection reset
