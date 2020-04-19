@@ -51,11 +51,15 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        onStartUp();
+        try{
+            onStartUp();
 
-        launch(args);
+            launch(args);
 
-        onApplicationClose();
+            onApplicationClose();
+        }catch(Exception e){
+            logger.fatal(e.getMessage(), e);
+        }
     }
 
     //region Application Events
