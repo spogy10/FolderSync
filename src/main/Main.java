@@ -20,7 +20,6 @@ import manager.MyFileManager;
 import manager.MyRemoteItemManager;
 import manager.UpdatableRemoteItemManager;
 import models.Status;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.SyncService;
@@ -72,7 +71,7 @@ public class Main extends Application {
                 throw new SetupStatusException();
         } catch (SetupStatusException e) {
             e.printStackTrace();
-            outputError("Could not setup status", e);
+            logger.error("Could not setup status: "+e.getMessage(), e);
             System.exit(1);
         }
     }
@@ -105,7 +104,7 @@ public class Main extends Application {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    outputError(e);
+                    logger.error(e.getMessage(), e);
                 }
             }
         });
@@ -142,21 +141,18 @@ public class Main extends Application {
     }
 
     private static void onApplicationClose(){
-        String saveStatusErrorMessage = "Could not save status on Application close";
+        String saveStatusErrorMessage = "Could not save status on Application close: ";
         try {
             if(!Status.saveStatus())
                 throw new SaveStatusException();
-        } catch (StatusNotInitializedException e) {
+        } catch (StatusNotInitializedException | SaveStatusException e) {
             e.printStackTrace();
-            outputError(saveStatusErrorMessage, e);
-        } catch (SaveStatusException e) {
-            e.printStackTrace();
-            outputError(saveStatusErrorMessage, e);
+            logger.error(saveStatusErrorMessage+e.getMessage(), e);
         }
 
         boolean settingsSaved = Settings.getInstance().saveSettings();
 
-        outputVerbose("Settings Saved? -- "+settingsSaved);
+        logger.debug("Settings Saved? -- "+settingsSaved);
 
         System.exit(0);
     }
@@ -177,73 +173,40 @@ public class Main extends Application {
                 @Override
                 public void run() {
                     syncControllerInterface.refreshLists();
-                    Main.outputVerbose("refresh list");
+                    logger.debug("refresh list");
                 }
             });
         }else{
-            Main.outputVerbose("attempted to refresh list but controller instance was null");
+            logger.warn("attempted to refresh list but controller instance was null");
         }
     }
 
     public static void setBItemManager(UpdatableRemoteItemManager manager){
         remoteItemManager = manager;
-        outputVerbose("bItemManager Set");
+        logger.debug("bItemManager Set");
     }
 
     public static UpdatableRemoteItemManager getRemoteItemManager(){
-        outputVerbose("Get bItemManager");
+        logger.debug("Get bItemManager");
         if(remoteItemManager == null){
             remoteItemManager = new MyRemoteItemManager();
-            outputVerbose("bItemManager set to remote manager");
+            logger.debug("bItemManager set to remote manager");
         }
-
-
         return remoteItemManager;
     }
 
     public static void setSyncControllerInterface(SyncControllerInterface syncControllerInterface){
         Main.syncControllerInterface = syncControllerInterface;
         if(syncControllerInterface == null)
-            outputVerbose("SyncControllerInterface Set to null");
+            logger.warn("SyncControllerInterface Set to null");
         else
-            outputVerbose("SyncControllerInterface Set");
+            logger.debug("SyncControllerInterface Set");
     }
 
     public static SyncControllerInterface getSyncControllerInterface(){
-        outputVerbose("Get SyncControllerInterface");
+        logger.debug("Get SyncControllerInterface");
         return syncControllerInterface;
     }
 
     //endregion
-
-
-    //region Logging
-
-    public static void outputError(Exception e){
-        outputError("", e);
-    }
-
-    public static void outputError(String message, Exception e){
-        addToLogger(message, Level.ERROR, e);
-    }
-
-    public static void outputVerbose(String message){
-        addToLogger(message, Level.DEBUG);
-    }
-
-    public static void outputInformation(String message){
-        addToLogger(message, Level.INFO);
-    }
-
-    private static void addToLogger(String message, Level level) {
-        logger.log(level, message);
-    }
-
-    private static void addToLogger(String message, Level level, Exception e) {
-        logger.log(level, message, e);
-    }
-
-    //endregion
-
-
 }

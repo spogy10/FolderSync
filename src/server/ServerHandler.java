@@ -137,7 +137,7 @@ public class ServerHandler implements Runnable, RequestSenderInterface {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError("Error sending request", e);
+            logger.error("Error sending request: "+e.getMessage(), e);
         }
 
         return response;
