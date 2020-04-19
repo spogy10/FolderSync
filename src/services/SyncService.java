@@ -10,11 +10,13 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import library.sharedpackage.models.FileContent;
-import main.Main;
 import library.sharedpackage.manager.ItemManager;
+import main.Main;
 import manager.*;
 import models.Changes;
 import models.Status;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -24,12 +26,13 @@ import java.util.Map;
 public class SyncService extends Service<Void> {
 
     private final double TOTAL = 8;
+    private static final Logger logger = LogManager.getLogger();
 
     private ItemManager fileManager;
     private UpdatableRemoteItemManager remoteManager;
 
-    private StringProperty updateProperty, subUpdateProperty;
-    private DoubleProperty progressProperty, subProgressProperty;
+    private final StringProperty updateProperty, subUpdateProperty;
+    private final DoubleProperty progressProperty, subProgressProperty;
 
 
 
@@ -45,10 +48,10 @@ public class SyncService extends Service<Void> {
             LoadingController.bindMainDoubleProperty(this, progressProperty);
             LoadingController.bindSubStringProperty(this, subUpdateProperty);
             LoadingController.bindSubDoubleProperty(this, subProgressProperty);
-            Main.outputVerbose("Binding properties in SyncService constructor");
+            logger.debug("Binding properties in SyncService constructor");
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError("Error binding properties in SyncService constructor", e);
+            logger.error("Error binding properties in SyncService constructor: "+e.getMessage(), e);
         }
     }
 
@@ -101,8 +104,8 @@ public class SyncService extends Service<Void> {
                     Main.refreshList();
                 }catch(Exception e){
                     e.printStackTrace();
-                    Main.outputError("Error syncing", e);
                     update("An error occurred during sync operation");
+                    logger.error("Error syncing: "+e.getMessage(), e);
                 }
                 Thread.sleep(1000);
                 LoadingController.close();
@@ -116,7 +119,7 @@ public class SyncService extends Service<Void> {
     }
 
     private void update(String updateMessage, double progress){
-        Main.outputVerbose(updateMessage);
+        logger.debug(updateMessage);
 
         Platform.runLater(() -> {
             updateProperty.setValue(updateMessage);
