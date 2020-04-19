@@ -1,10 +1,11 @@
 package manager;
 
 import exceptions.MyFileManagerNotInitializedException;
-import main.Main;
 import library.sharedpackage.manager.ItemManager;
 import library.sharedpackage.models.FileContent;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utility.Settings;
 
 import java.io.File;
@@ -16,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MyFileManager implements ItemManager, FileFilter {
+
+    private static final Logger logger = LogManager.getLogger();
 
     private static File folder;
 
@@ -44,23 +47,20 @@ public class MyFileManager implements ItemManager, FileFilter {
     @Override
     public boolean removeItems(List<String> fileNames) {
         boolean success = true;
-        String informationMessageHeader = "MyFileManager.removeItems";
         for(String fileName : fileNames){
             try{
 
                 boolean result = Files.deleteIfExists(new File(folder, fileName).toPath());
                 if(result)
-                    Main.outputInformation(informationMessageHeader+" "+fileName+" deleted.");
+                    logger.info(fileName+" deleted.");
                 else
-                    Main.outputInformation(informationMessageHeader+" "+fileName+" does not exist.");
+                    logger.warn(fileName+" does not exist.");
             } catch (IOException e) {
                 e.printStackTrace();
-                String message = informationMessageHeader + " Error deleting file :"+fileName;
-                Main.outputError(message, e);
+                logger.error("Error deleting file :"+fileName+". "+e.getMessage(), e);
                 success = false;
             }
         }
-
         return success;
     }
 
@@ -83,7 +83,7 @@ public class MyFileManager implements ItemManager, FileFilter {
             list.add(retrieveFile(fileName));
         }
 
-        Main.outputVerbose("created list of A files");
+        logger.info("Created list of A files.");
         return list;
     }
 
@@ -118,10 +118,8 @@ public class MyFileManager implements ItemManager, FileFilter {
         if(file.isFile()){
             fileContent = new FileContent(fileName, FileUtils.sizeOf(file));
         }else{
-            Main.outputVerbose("error retrieving file:" + fileName +  "does not exist");
+            logger.warn("Error retrieving file: " + fileName +  " does not exist.");
         }
-
-
         return fileContent;
     }
 }

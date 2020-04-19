@@ -3,9 +3,9 @@ package manager;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 import library.sharedpackage.communication.DataCarrier;
-import library.sharedpackage.manager.RemoteItemManager;
-import main.Main;
 import library.sharedpackage.models.FileContent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import server.RequestSenderInterface;
 import server.ServerHandler;
 
@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MyRemoteItemManager implements UpdatableRemoteItemManager {
+
+    private static final Logger logger = LogManager.getLogger();
 
     private RequestSenderInterface requestSenderInterface;
 
@@ -32,13 +34,13 @@ public class MyRemoteItemManager implements UpdatableRemoteItemManager {
     public static boolean responseCheck(DataCarrier response) {
         if(!response.isRequest()) {
             if (!response.getInfo().IsErrorCode) {
-                Main.outputVerbose("No Error Code");
+                logger.debug("No Error Code");
                 return true;
             }
 
-            Main.outputVerbose(response.getInfo().toReadableString());
+            logger.debug(response.getInfo().toReadableString());
         }else{
-            Main.outputVerbose("Response set as request");
+            logger.debug("Response set as request");
         }
 
         return false;
@@ -48,10 +50,10 @@ public class MyRemoteItemManager implements UpdatableRemoteItemManager {
     public boolean addItems(List<FileContent> files) {
         DataCarrier carrier = requestSenderInterface.addItems((LinkedList<FileContent>) files);
         if(responseCheck(carrier) && (boolean) carrier.getData()){
-            Main.outputVerbose("Remote add items succeeded");
+            logger.info("Remote add items succeeded");
             return true;
         }
-        Main.outputVerbose("Remote add items failed");
+        logger.warn("Remote add items failed");
         return false;
     }
 
@@ -62,16 +64,16 @@ public class MyRemoteItemManager implements UpdatableRemoteItemManager {
 
         DataCarrier carrier = requestSenderInterface.testConnection();
         if(!responseCheck(carrier)){
-            Main.outputVerbose("Connection not setup");
+            logger.warn("Connection not setup");
             return false;
         }
 
         if(!( (boolean) carrier.getData() )){
-            Main.outputVerbose("Connection Setup result returned false");
+            logger.warn("Connection Setup result returned false");
             return false;
         }
 
-        Main.outputVerbose("Connection setup");
+        logger.debug("Connection setup");
 
         return true;
     }
@@ -90,10 +92,10 @@ public class MyRemoteItemManager implements UpdatableRemoteItemManager {
     public boolean removeItems(List<String> fileNames) {
         DataCarrier carrier = requestSenderInterface.removeItems((LinkedList<String>) fileNames);
         if(responseCheck(carrier) && (boolean) carrier.getData()){
-            Main.outputVerbose("Remote remove items succeeded");
+            logger.info("Remote remove items succeeded");
             return true;
         }
-        Main.outputVerbose("Remote remove items failed");
+        logger.warn("Remote remove items failed");
         return false;
     }
 
@@ -101,10 +103,10 @@ public class MyRemoteItemManager implements UpdatableRemoteItemManager {
     public List<String> getItemsList() {
         DataCarrier carrier = requestSenderInterface.getItemsList();
         if(responseCheck(carrier)){
-            Main.outputVerbose("Remote get items list succeeded");
+            logger.info("Remote get items list succeeded");
             return (LinkedList<String>) carrier.getData();
         }
-        Main.outputVerbose("Remote get items list failed");
+        logger.warn("Remote get items list failed");
         return new LinkedList<>();
     }
 
@@ -112,10 +114,10 @@ public class MyRemoteItemManager implements UpdatableRemoteItemManager {
     public List<FileContent> getItems(List<String> fileNames) {
         DataCarrier carrier = requestSenderInterface.getItems((LinkedList<String>) fileNames);
         if(responseCheck(carrier)){
-            Main.outputVerbose("Remote get items succeeded");
+            logger.info("Remote get items succeeded");
             return (List<FileContent>) carrier.getData();
         }
-        Main.outputVerbose("Remote get items failed");
+        logger.warn("Remote get items failed");
         return new LinkedList<>();
     }
 

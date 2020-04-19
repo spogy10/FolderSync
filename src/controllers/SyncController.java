@@ -2,7 +2,7 @@ package controllers;
 
 import JavaFXHelper.FXHelper;
 import exceptions.MyFileManagerNotInitializedException;
-import exceptions.StatusNotIntializedException;
+import exceptions.StatusNotInitializedException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -72,7 +72,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
     public void btnClearStatusListOnClick() {
         try {
             Status.clearStatusList();
-        } catch (StatusNotIntializedException e) {
+        } catch (StatusNotInitializedException e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);
         }
@@ -184,7 +184,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
 
         try {
             Status.clearStatusList();
-        } catch (StatusNotIntializedException e) {
+        } catch (StatusNotInitializedException e) {
             e.printStackTrace();
         }
     }

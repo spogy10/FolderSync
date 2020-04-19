@@ -6,7 +6,7 @@ import controllers.LoggerController;
 import controllers.SyncControllerInterface;
 import exceptions.SaveStatusException;
 import exceptions.SetupStatusException;
-import exceptions.StatusNotIntializedException;
+import exceptions.StatusNotInitializedException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -146,7 +146,7 @@ public class Main extends Application {
         try {
             if(!Status.saveStatus())
                 throw new SaveStatusException();
-        } catch (StatusNotIntializedException e) {
+        } catch (StatusNotInitializedException e) {
             e.printStackTrace();
             outputError(saveStatusErrorMessage, e);
         } catch (SaveStatusException e) {

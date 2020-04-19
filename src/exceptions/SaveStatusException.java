@@ -1,8 +1,6 @@
 package exceptions;
 
 public class SaveStatusException extends Exception {
-
-
     public SaveStatusException() {
         this("Error saving status");
     }

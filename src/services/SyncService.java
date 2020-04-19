@@ -1,7 +1,7 @@
 package services;
 
 import controllers.LoadingController;
-import exceptions.StatusNotIntializedException;
+import exceptions.StatusNotInitializedException;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -52,7 +52,7 @@ public class SyncService extends Service<Void> {
         }
     }
 
-    private void handleChanges(Map<String, Boolean> pcMap, Map<String, Boolean> mobileMap, Map<String, Boolean> statMap) throws StatusNotIntializedException {
+    private void handleChanges(Map<String, Boolean> pcMap, Map<String, Boolean> mobileMap, Map<String, Boolean> statMap) throws StatusNotInitializedException {
 
         update("Removing files from primary folder",2);
         removeItems(filesToBeRemoved(pcMap), fileManager);
@@ -126,7 +126,7 @@ public class SyncService extends Service<Void> {
     }
 
 
-    private void removeItems(List<String> fileList, ItemManager itemManager) throws StatusNotIntializedException {
+    private void removeItems(List<String> fileList, ItemManager itemManager) throws StatusNotInitializedException {
         if(!fileList.isEmpty()){
 
             if(itemManager instanceof Status)
