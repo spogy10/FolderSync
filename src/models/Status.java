@@ -1,9 +1,10 @@
 package models;
 
 import exceptions.StatusNotInitializedException;
-import main.Main;
 import library.sharedpackage.manager.ItemManager;
 import library.sharedpackage.models.FileContent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utility.FileManager;
 
 import java.io.*;
@@ -12,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Status implements ItemManager {
+
+    private static final Logger logger = LogManager.getLogger();
     private static HashSet<String> status;
     private static final String FOLDER_NAME = "Status Folder";
     private static final String FILE_NAME = "status.sync";
@@ -26,28 +29,25 @@ public class Status implements ItemManager {
 
     public static boolean saveStatus() throws StatusNotInitializedException {
         isStatusInitialized();
-        String errorMessage = "Status file not saved";
 
         try {
             FileManager.WriteFile(FOLDER_NAME, FILE_NAME, status);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            Main.outputError(errorMessage, e);
+            logger.error("Status file not saved: " + e.getMessage(), e);
         }
 
         return false;
     }
 
     private static boolean retrieveStatusFromFile() {
-        String errorMessage = "Status could not be retrieved from file";
-
         try {
             status = FileManager.ReadFile(FOLDER_NAME, FILE_NAME);
             return true;
         }  catch (Exception e) {
             e.printStackTrace();
-            Main.outputError(errorMessage, e);
+            logger.error("Status could not be retrieved from file: "+e.getMessage(), e);
         }
         return false;
     }
@@ -74,15 +74,12 @@ public class Status implements ItemManager {
     }
 
     public static void addToStatus(List<String> fileNames){
-        String errorMessage = "Status not initialized in addToStatus method";
-
         try{
             isStatusInitialized();
         } catch (StatusNotInitializedException e) {
-            Main.outputError(errorMessage, e);
+            logger.error("Status not initialized in addToStatus method: "+e.getMessage(), e);
             initializeStatus();
         }
-
         status.addAll(fileNames);
     }
 
@@ -104,7 +101,7 @@ public class Status implements ItemManager {
             removeFromStatus(fileNames);
         } catch (StatusNotInitializedException e) {
             e.printStackTrace();
-            Main.outputError("Error in removeItems for Status", e);
+            logger.error(e.getMessage(), e);
             return false;
         }
 
@@ -117,7 +114,7 @@ public class Status implements ItemManager {
             return getStatusList();
         } catch (StatusNotInitializedException e) {
             e.printStackTrace();
-            Main.outputError("Error in getItemList for Status", e);
+            logger.error(e.getMessage(), e);
         }
 
         return new LinkedList<>();
