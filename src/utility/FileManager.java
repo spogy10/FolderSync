@@ -1,12 +1,14 @@
 package utility;
 
 import exceptions.DirectoryCreationException;
-import main.Main;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.util.HashSet;
 
 public class FileManager {
+
+    private static final Logger logger = LogManager.getLogger();
 
     private static void createDirectoryIfNotExists(String directory) throws DirectoryCreationException {
         File file = new File(directory);
@@ -28,7 +30,7 @@ public class FileManager {
             fileWriter.write(content);
             fileWriter.flush();
         } catch (IOException e) {
-            Main.outputError("Error writing to file "+fileName, e);
+            logger.error("Error writing to file "+fileName+". "+e.getMessage(), e);
             e.printStackTrace();
             throw e;
         }finally {
@@ -36,7 +38,7 @@ public class FileManager {
                 try{
                     fileWriter.close();
                 } catch (IOException e) {
-                    Main.outputError("Error closing file writer for "+fileName, e);
+                    logger.error("Error closing file writer for "+fileName+". "+e.getMessage(), e);
                     e.printStackTrace();
                 }
             }
@@ -51,7 +53,7 @@ public class FileManager {
 
     public static <T> void WriteFile(String fileName, T content) throws IOException {
         ObjectOutputStream oos = null;
-        String errorMessage = "Unable to write object to file: "+fileName;
+        String errorMessage = "Unable to write object to file: "+fileName+".";
 
         try {
             File file = new File(fileName);
@@ -62,11 +64,11 @@ public class FileManager {
             oos.flush();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Main.outputError(errorMessage, e);
+            logger.error(errorMessage+" "+e.getMessage(), e);
             throw e;
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError(errorMessage, e);
+            logger.error(errorMessage+" "+e.getMessage(), e);
             throw e;
         } finally {
             if (oos != null) {
@@ -74,7 +76,7 @@ public class FileManager {
                     oos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Main.outputError("Error closing ObjectOutputStream for: "+fileName, e);
+                    logger.error("Error closing ObjectOutputStream for: "+fileName+". "+e.getMessage(), e);
                 }
             }
         }
@@ -86,7 +88,7 @@ public class FileManager {
 
     public static <T> T ReadFile(String fileName) throws IOException, ClassNotFoundException {
         ObjectInputStream ois = null;
-        String errorMessage = "FileManager.ReadFile: Error reading from file: "+fileName;
+        String errorMessage = "Error reading from file: "+fileName+".";
         try {
             File file = new File(fileName);
             ois = new ObjectInputStream(new FileInputStream(file));
@@ -94,15 +96,15 @@ public class FileManager {
             return (T) ois.readObject();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Main.outputError(errorMessage, e);
+            logger.error(errorMessage+" "+e.getMessage(), e);
             throw e;
         } catch (IOException e) {
             e.printStackTrace();
-            Main.outputError(errorMessage, e);
+            logger.error(errorMessage+" "+e.getMessage(), e);
             throw e;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            Main.outputError(errorMessage, e);
+            logger.error(errorMessage+" "+e.getMessage(), e);
             throw e;
         } finally {
             if (ois != null)
@@ -110,7 +112,7 @@ public class FileManager {
                     ois.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Main.outputError(errorMessage, e);
+                    logger.error("Error closing ObjectInputStream for: "+fileName+". "+e.getMessage(), e);
                 }
         }
     }

@@ -1,11 +1,14 @@
 package utility;
 
 import javafx.scene.image.Image;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class Resources {
+    private static final Logger logger = LogManager.getLogger();
 
     public static final String ASSETS_FOLDER = System.getProperty("user.dir")+"\\assets\\";
     public static final String SYNC_ICON = "sync_green.png";
@@ -19,6 +22,7 @@ public class Resources {
             image = new Image(new FileInputStream(ASSETS_FOLDER+fileName));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return image;
     }

@@ -9,7 +9,6 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 @Plugin(
@@ -18,7 +17,7 @@ import java.io.Serializable;
         elementType = Appender.ELEMENT_TYPE)
 public class StringBuilderAppender extends AbstractAppender {
 
-    private static StringBuilder stringLogger = new StringBuilder("");
+    private static final StringBuilder stringLogger = new StringBuilder();
     private static LoggerInterface loggerInterface;
 
     protected StringBuilderAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
