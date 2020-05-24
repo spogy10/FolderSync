@@ -1,0 +1,17 @@
+javac
+
+
+
+something to do with 
+
+--module-path "C:\Program Files\Java\jdk-11.0.1\lib\javafx-sdk-11
+\lib" --add-modules=javafx.controls,javafx.fxml
+
+
+
+
+
+
+META-INF/MANIFEST.MF
+
+-Multi-Release: true
