@@ -74,9 +74,9 @@ public class Server implements Runnable {
             Iterator<NetworkInterface> iterator = NetworkInterface.getNetworkInterfaces().asIterator();
             while(iterator.hasNext()){
                 var network = iterator.next();
-                String networkName = "wlan4";
+                String networkDisplayName = "Intel(R) Dual Band Wireless-AC 3168";
 
-                if(network.getName().equals(networkName)){
+                if(network.getDisplayName().equals(networkDisplayName)){
                     Iterator<InetAddress> addressIterator =  network.getInetAddresses().asIterator();
 
                     InetAddress address = addressIterator.next();
@@ -87,7 +87,7 @@ public class Server implements Runnable {
                 }
 
             }
-        } catch (SocketException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);
         }
