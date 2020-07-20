@@ -57,11 +57,6 @@ public class LoadingController implements Initializable {
         pbSub.progressProperty().bind(subDoubleProperty);
     }
 
-
-
-
-
-
     private static boolean isLoadingViewShowing(){
         return loadingOn.get();
     }
@@ -73,50 +68,6 @@ public class LoadingController implements Initializable {
         }
         logger.info("Loading view not already showing");
         startLoadingView(obj);
-    }
-
-    public static void close(){
-        logger.info("close loading view");
-        closeLoadingView();
-    }
-
-    private static void closeLoadingView(){
-        loadingOn.compareAndSet(true, false);
-        Platform.runLater(() -> {
-            if(loadingStage != null){
-                loadingStage.close();
-            }
-
-            loadingStage = null;
-            resetProperties();
-        });
-    }
-
-    private static void initializeProperties(){
-        mainStringProperty = new SimpleStringProperty("");
-        subStringProperty = new SimpleStringProperty("");
-
-        mainDoubleProperty = new SimpleDoubleProperty(0.0);
-        subDoubleProperty = new SimpleDoubleProperty(0.0);
-    }
-
-    private static void resetProperties(){
-        if(mainStringProperty != null){
-            mainStringProperty.unbind();
-            mainStringProperty.setValue("");
-        }
-        if(subStringProperty != null){
-            subStringProperty.unbind();
-            subStringProperty.setValue("");
-        }
-        if(mainDoubleProperty != null){
-            mainDoubleProperty.unbind();
-            mainDoubleProperty.setValue(0.0);
-        }
-        if(subDoubleProperty != null){
-            subDoubleProperty.unbind();
-            subDoubleProperty.setValue(0.0);
-        }
     }
 
     private static void startLoadingView(Object obj) throws IOException {
@@ -140,6 +91,50 @@ public class LoadingController implements Initializable {
         Scene scene = new Scene(root);
         loadingStage.setScene(scene);
         loadingStage.show();
+    }
+
+    public static void close(){
+        logger.info("close loading view");
+        closeLoadingView();
+    }
+
+    private static void closeLoadingView(){
+        loadingOn.compareAndSet(true, false);
+        Platform.runLater(() -> {
+            if(loadingStage != null){
+                loadingStage.close();
+            }
+
+            loadingStage = null;
+            resetProperties();
+        });
+    }
+
+    private static void initializeProperties(){
+        if(mainStringProperty == null)  mainStringProperty = new SimpleStringProperty("");
+        if(subStringProperty == null)  subStringProperty = new SimpleStringProperty("");
+
+        if(mainDoubleProperty == null)  mainDoubleProperty = new SimpleDoubleProperty(0.0);
+        if(subDoubleProperty == null)  subDoubleProperty = new SimpleDoubleProperty(0.0);
+    }
+
+    private static void resetProperties(){
+        if(mainStringProperty != null){
+            mainStringProperty.unbind();
+            mainStringProperty.setValue("");
+        }
+        if(subStringProperty != null){
+            subStringProperty.unbind();
+            subStringProperty.setValue("");
+        }
+        if(mainDoubleProperty != null){
+            mainDoubleProperty.unbind();
+            mainDoubleProperty.setValue(0.0);
+        }
+        if(subDoubleProperty != null){
+            subDoubleProperty.unbind();
+            subDoubleProperty.setValue(0.0);
+        }
     }
 
     public static void showMainMessage(Object obj, String message) throws IOException {
