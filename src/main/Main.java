@@ -47,6 +47,12 @@ public class Main extends Application {
 
     //todo: logger display hides behind main window
 
+    //todo: add finish button on loading controller; maybe also cancel button
+
+    //todo: change service worker implementation to use multiple Tasks and use updateProgress method instead of Platform.runLater
+
+    //todo: look over Platform.runLater calls for frequently updated items
+
 
     public static void main(String[] args) {
         try{
