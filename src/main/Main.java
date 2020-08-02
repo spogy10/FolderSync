@@ -45,7 +45,7 @@ public class Main extends Application {
 
     //todo: logger display blury
 
-    //todo: logger display hides behind main  window
+    //todo: logger display hides behind main window
 
 
     public static void main(String[] args) {
