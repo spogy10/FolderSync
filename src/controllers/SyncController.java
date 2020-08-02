@@ -72,6 +72,7 @@ public class SyncController implements Initializable, SyncControllerInterface {
     public void btnClearStatusListOnClick() {
         try {
             Status.clearStatusList();
+            refreshStatusList();
         } catch (StatusNotInitializedException e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);
