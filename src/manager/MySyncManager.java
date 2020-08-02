@@ -9,7 +9,7 @@ import java.util.List;
 import static syncenum.SyncEnum.*;
 
 public class MySyncManager implements SyncManager {
-    private static MySyncManager ourInstance = new MySyncManager();
+    private static final MySyncManager ourInstance = new MySyncManager();
 
     public static MySyncManager getInstance() {
         return ourInstance;
@@ -28,11 +28,8 @@ public class MySyncManager implements SyncManager {
         Changes changes = new Changes();
 
         for(String fileName : combination){
-            boolean pc = pcFiles.contains(fileName);
-            boolean mobile = mobileFiles.contains(fileName);
-            boolean stat = statusFiles.contains(fileName);
 
-            switch(checkFile(fileName, pc, mobile, stat)){
+            switch(checkFile(fileName, pcFiles, mobileFiles, statusFiles)){
                 case ALL: //do nothing
                     break;
                 case A_ONLY: //add to b and status
@@ -60,9 +57,10 @@ public class MySyncManager implements SyncManager {
         return changes;
     }
 
-    @Override
-    public SyncEnum checkFile(String fileName, boolean pc, boolean mobile, boolean stat) {
-
+    private SyncEnum checkFile(String fileName, List<String> pcFiles, List<String> mobileFiles, List<String> statusFiles) {
+        boolean pc = pcFiles.contains(fileName);
+        boolean mobile = mobileFiles.contains(fileName);
+        boolean stat = statusFiles.contains(fileName);
 
         if(pc && mobile && stat)
             return ALL;
@@ -84,8 +82,6 @@ public class MySyncManager implements SyncManager {
 
         if(!pc && !mobile && stat)
             return STATUS_ONLY;
-
-
 
         return INVALID;
     }
