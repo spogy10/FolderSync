@@ -7,7 +7,7 @@
       "property": [
         {
           "name": "pattern",
-          "value": "[%t] %l - %m%n"
+          "value": "%d{yyy-mm-dd HH:mm:ss} [%t] %-5p %l - %m%n"
         },
         {
           "name": "LogDir",
