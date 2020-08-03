@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
@@ -23,7 +24,7 @@ public class LoggerController implements Initializable, LoggerInterface {
     }
 
     public void updateLogger(String message){
-        taDisplay.appendText(message);
+        Platform.runLater(() -> taDisplay.appendText(message));
     }
 
     @Override

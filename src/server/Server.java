@@ -263,6 +263,9 @@ public class Server implements Runnable {
             e.printStackTrace();
             logger.error("Error sending file: "+e.getMessage(), e);
         } finally {
+            if(loadingProperty != null){
+                loadingProperty.setValue(0);
+            }
             if(fis == null){
                 success = false;
             }else{
@@ -334,7 +337,6 @@ public class Server implements Runnable {
             logger.error("Error receiving file: "+e.getMessage(), e);
         } finally {
             if(loadingProperty != null){
-                loadingProperty.unbind();
                 loadingProperty.setValue(0);
             }
             if(fos == null){
